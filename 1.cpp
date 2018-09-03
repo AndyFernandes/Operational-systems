@@ -1,12 +1,14 @@
 #include<stdio.h>
-#include<math.h>
+#include<stdlib.h>
+#include<iostream>
+#include<cmath>
 
 using namespace std;
 
 void fib(int inicio, int fim){
 
-	while(inicio < fim){
-		cout << (1/sqrt(5)) * pow(((1 + sqrt(5))/2), inicio) - (1/sqrt(5)) * pow(((1 - sqrt(5))/2), inicio)
+	while(inicio <= fim){
+		cout << " " <<  (1/sqrt(5)) * pow(((1 + sqrt(5))/2), inicio) - (1/sqrt(5)) * pow(((1 - sqrt(5))/2), inicio);
 		inicio++;
 	}
 
