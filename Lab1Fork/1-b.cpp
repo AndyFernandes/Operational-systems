@@ -1,3 +1,6 @@
+// Alunas: 		Andreza Fernandes de Oliveira - 384341
+//				Arina de Jesus Amador Monteiro Sanches - 392476
+// 07.09.2018
 #include<errno.h>
 #include<signal.h>
 #include<stdio.h>
