@@ -12,18 +12,17 @@
 #include<sys/wait.h>
 using namespace std;
 
-double calcFibonnaci(int n){	
+double calcFibonacci(int n){	
 	return (1.0/sqrt(5.0)) * pow(((1.0 + sqrt(5.0))/2.0), n) - (1.0/sqrt(5.0)) * pow(((1.0 - sqrt(5.0))/2.0), n);
 }
 
 void imprimirSequencia(int inicio, int fim){
 	for(int i = inicio -1; i < fim; i++){
-		cout << calcFibonnaci(i) << " ";
+		cout << calcFibonacci(i) << " ";
 	}
 }
 
 int main(){
-	int pid, status;
 	int inicio, fim;
 	
 	cout << "\nPosição Inicial: ";
