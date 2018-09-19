@@ -1,0 +1,20 @@
+This directory contains DateServer.java and DateClient.java. These programs can be run by
+first compiling both files and then entering
+
+	java DateServer
+
+to start the server and
+
+	java DateClient
+
+to start the client. 
+
+It is possible to start the server and then connect to it by using telnet.  After
+starting the server, enter
+
+	telnet <hostname> 6013
+
+where <hostname> is the IP name or address the server is running on. If the server is running
+on the same computer as telnet is being issued from, enter
+
+	telnet localhost 6013
