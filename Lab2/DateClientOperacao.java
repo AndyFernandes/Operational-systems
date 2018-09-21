@@ -6,7 +6,7 @@
 import java.net.*;
 import java.io.*;
 
-public class DateClient
+public class DateClientOperacao
 {
 	public static void main(String[] args) throws IOException {
 		InputStream in = null;
@@ -15,12 +15,19 @@ public class DateClient
 
 		try {
 			sock = new Socket("127.0.0.1",6013);
+			
+			PrintWriter pout = new PrintWriter(sock.getOutputStream(), true);
+			pout.println("/:25:5");
+			
 			in = sock.getInputStream();
 			bin = new BufferedReader(new InputStreamReader(in));
 
 			String line;
-			while( (line = bin.readLine()) != null)
+			while( (line = bin.readLine()) != null){
 				System.out.println(line);
+			}
+
+			pout.close();
 		}
 		catch (IOException ioe) {
 				System.err.println(ioe);
