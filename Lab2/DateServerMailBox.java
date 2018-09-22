@@ -12,20 +12,16 @@ public class DateServerMailBox
 {
 
 	public static void buscarMensagem(String id, ArrayList<String> mailbox, PrintWriter pout){
-		// Iterator<String> iterator = mailbox.iterator();
+		Iterator<String> iterator = mailbox.iterator();
 		String[] parts = null;
 		int i = 0;
 
 		parts = mailbox.get(0).split(":");
-		// while(i < mailbox.size()){
-		// 	parts = mailbox.get(i).split(":");
-		if(parts[3] == id){
-			pout.println(parts[1] + ". \n Enviado por: " + parts[2]);
-			mailbox.remove(i);
+		while(iterator.hasNext()){
+			parts = mailbox.get(i).split(":");
+			if(parts[3] == id){
+				pout.println(parts[1] + ". \n Enviado por: " + parts[2]);
 		}
-			// i++;	
-			
-		
 	}
 
 	public static void verificarMensagem(String mensagem, ArrayList<String> mailbox, PrintWriter pout){
