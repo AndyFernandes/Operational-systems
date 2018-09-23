@@ -1,21 +1,21 @@
 /**
  * RemoteDate interface iplementation.
  */
-public class DateObjectImpl extends java.rmi.server.UnicastRemoteObject implements DateObject
+public class MensagemObjectImpl extends java.rmi.server.UnicastRemoteObject implements MensagemObject
 {
-	private java.util.Date date;
+	private String mensagem;
 
-	public DateObjectImpl() throws java.rmi.RemoteException { }
+	public MensagemObjectImpl() throws java.rmi.RemoteException { }
 
-	public void setDate(java.util.Date date) throws java.rmi.RemoteException {
-		this.date = date;
+	public void setMensagem(String mensagem) throws java.rmi.RemoteException {
+		this.mensagem = mensagem;
 	}
 
-	public java.util.Date getDate() {
-		return date;
+	public java.util.Date getMensagem() {
+		return mensagem;
 	}
 
 	public String toString() {
-		return date.toString();
+		return mensagem.toString();
 	}
 }

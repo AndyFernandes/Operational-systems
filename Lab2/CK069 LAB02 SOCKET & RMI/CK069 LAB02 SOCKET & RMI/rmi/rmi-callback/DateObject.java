@@ -2,7 +2,7 @@
  * DateObject interface.
  *
  */
-public interface DateObject extends java.rmi.Remote
+public interface MensagemObject extends java.rmi.Remote
 {
-	public void setDate(java.util.Date date) throws java.rmi.RemoteException;
+	public void setMensagem(String date) throws java.rmi.RemoteException;
 }
