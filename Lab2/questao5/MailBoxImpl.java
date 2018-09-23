@@ -26,14 +26,14 @@ public class MailBoxImpl extends UnicastRemoteObject implements MailBox{
         }
     }
 
-    public void send(String mensagem) throws RemoteException{
-        this.mailbox.add(mensagem);
+    public void send(MensagemObject mensagem) throws RemoteException{
+        this.mailbox.add(mensagem.getMensagem());
         System.out.println("Mensagem enviada!");
     }
 
-    public void receive(String id_user) throws RemoteException{
+    public void receive(MensagemObject id_user) throws RemoteException{
         System.out.println("Caixa de entrada: \n\n");
-        buscarMensagem(id_user);
+        buscarMensagem(id_user.getMensagem());
     }
 
    public static void main(String[] args)  {

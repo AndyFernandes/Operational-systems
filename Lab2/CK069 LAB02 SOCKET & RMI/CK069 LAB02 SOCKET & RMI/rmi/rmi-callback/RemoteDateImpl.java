@@ -8,8 +8,7 @@ import java.util.Date;
  
 import java.rmi.*;
 
-public class RemoteDateImpl extends UnicastRemoteObject implements RemoteDate
-{
+public class RemoteDateImpl extends UnicastRemoteObject implements RemoteDate{
     public RemoteDateImpl() throws RemoteException {  }
     
     public  Date getDate() throws RemoteException {

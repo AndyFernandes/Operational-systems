@@ -11,6 +11,7 @@ public class Client {
         String comunicacaoServer;
         
         try {
+                MensagemObject mensagem = new MensagemObjectImpl();
                 MailBox mailbox = (MailBox)Naming.lookup(host);
 
                 System.out.println("\nDigite o seu identificador: ");
@@ -22,18 +23,20 @@ public class Client {
                 switch(operacao){
                   case "1":
                     System.out.println("\nDigite a sua mensagem: ");
-                    String mensagem = reader.next();
+                    String mensagemEnv = reader.next();
 
                     System.out.println("\nDigite o id do destinatario: ");
                     String id_destinatario = reader.next();
 
-                    comunicacaoServer =  mensagem + ":" + id + ":" + id_destinatario;
-                    mailbox.send(comunicacaoServer);
+                    comunicacaoServer =  mensagemEnv + ":" + id + ":" + id_destinatario;
+                    mensagem.setMensagem(comunicacaoServer);
+                    mailbox.send(mensagem);
                     break;
 
                   case "2":
                     comunicacaoServer = id;
-                    mailbox.receive(id);
+                    mensagem.setMensagem(comunicacaoServer);
+                    mailbox.receive(mensagem);
                 }
 
         } catch (Exception e) {

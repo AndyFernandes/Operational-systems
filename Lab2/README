@@ -1,20 +1,20 @@
-This directory contains DateServer.java and DateClient.java. These programs can be run by
-first compiling both files and then entering
+Grupo: 		Andreza Fernandes de Oliveira, 384341
+			Arina de Jesus Amador Monteiro Sanches, 392476
+			Carlos Abraão Sousa Assunção, 401357
 
-	java DateServer
+As questões se encontram em pastas especificadas.
 
-to start the server and
+Da questão 1 à 4 deve-se rodar os seguintes comandos:
+1. Compilar os arquivos
+2. java DateServer(complemento do nome)
+3. java DateClient(complemento do nome)
 
-	java DateClient
+Na questao 5, no primeiro terminal:
+1. Compilar o Client
 
-to start the client. 
+no segundo terminal:
+1. Compilar as demais classes
+2. rmic MailBoxImpl
+3. rmiregistry &
+4. java MailBoxImpl
 
-It is possible to start the server and then connect to it by using telnet.  After
-starting the server, enter
-
-	telnet <hostname> 6013
-
-where <hostname> is the IP name or address the server is running on. If the server is running
-on the same computer as telnet is being issued from, enter
-
-	telnet localhost 6013
