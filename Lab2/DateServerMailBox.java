@@ -12,16 +12,19 @@ public class DateServerMailBox
 {
 
 	public static void buscarMensagem(String id, ArrayList<String> mailbox, PrintWriter pout){
-		Iterator<String> iterator = mailbox.iterator();
+		// Iterator<String> iterator = mailbox.iterator();
 		String[] parts = null;
 		int i = 0;
 
-		parts = mailbox.get(0).split(":");
-		while(iterator.hasNext()){
+		while(i < mailbox.size()){
 			parts = mailbox.get(i).split(":");
-			if(parts[3] == id){
+			if(Integer.parseInt(parts[3]) == Integer.parseInt(id)){
 				pout.println(parts[1] + ". \n Enviado por: " + parts[2]);
+			}
+			i++;
 		}
+		String n = null;
+		pout.println(n);
 	}
 
 	public static void verificarMensagem(String mensagem, ArrayList<String> mailbox, PrintWriter pout){
@@ -32,11 +35,9 @@ public class DateServerMailBox
 			case "1":
 				mailbox.add(mensagem);
 				pout.println("Mensagem enviada!");
-				System.out.println("oq eu fiz da minha vida");
 				break;
 			case "2":
 				pout.println("Caixa de entrada: \n\n");
-				pout.println(mailbox.get(0));
 				buscarMensagem(parts[1], mailbox, pout);
 				break;
 			default:
@@ -60,7 +61,7 @@ public class DateServerMailBox
 				client = sock.accept();
 				System.out.println("server = " + sock);
 				System.out.println("client = " + client);
-
+	
 				in = client.getInputStream();
 				bin = new BufferedReader(new InputStreamReader(in));
 				PrintWriter pout = new PrintWriter(client.getOutputStream(), true);
