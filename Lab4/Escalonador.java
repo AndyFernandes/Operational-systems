@@ -8,17 +8,18 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-public class Escalanador{
+public class Escalonador{
 	private static final String VIRGULA = ",";
 	ArrayList<String> processos;
 
-	Escalanador(){
+	Escalonador(){
 		processos = new ArrayList();
 	}
 
 	public void lerArquivo(String arquivo) throws Exception{
 		BufferedReader readeer = new BufferedReader(new InputStreamReader(new FileInputStream(arquivo)));
     	String linha = null;
+    	
     	while ((linha = readeer.readLine()) != null) {
             this.processos.add(linha);
         }
@@ -30,8 +31,7 @@ public class Escalanador{
 		}
 	}
 
-	public  void SJFSNaoPreemptivo(){	
-		// processosOrdenados.add(this.processos.get(0));
+	public  void sjfsNaoPreemptivo(){
 		// Levar em consideração o tempo de chegada e o burst time
 		// DEIXAR ISSO AQUI MAIS BONITINHO e realmente testar se não vai ter conflito nessas duas condições do tempo de chegada com o burst time
 		for(int i = 0; i < this.processos.size(); i++){
@@ -47,12 +47,16 @@ public class Escalanador{
 		}
 	}
 
+	public void sjfsPreemptivo(){
+		// realizar a troca dos processos e armazenar o tempo que falta para terminar execução.
+	}
+
 	public static void main(String[] args) throws Exception{
-		Escalanador escalonador = new Escalanador();  
+		Escalonador escalonador = new Escalonador();  
 		escalonador.lerArquivo("dados.csv");
         //String[] dados = escalonador.processos.get(0).split(VIRGULA);
         //System.out.println("Tempo Chegada: " + dados[0] + "| id: " + dados[1] + " | burst time: " + dados[2] + " | prioridade: " + dados[3] + "\n");
-    	escalonador.SJFSNaoPreemptivo();
+    	escalonador.sjfsNaoPreemptivo();
     	escalonador.imprimir();
     }
 }
