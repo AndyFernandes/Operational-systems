@@ -11,10 +11,10 @@ public class Consumer implements Runnable {
  public synchronized void run() {
 	 Random random = new Random();
 	 while (true) {
-	 dropbox.take(even);
-	 try {
-	 Thread.sleep(random.nextInt(100));
-	 } catch (InterruptedException e) { }
+		 try {
+		 	dropbox.take(even);
+		 	Thread.sleep(random.nextInt(100));
+		 } catch (InterruptedException e) { }
 	 }
  }
 }
