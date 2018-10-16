@@ -186,7 +186,7 @@ public class Escalonador{
 
 		ArrayList<String> ganttRR; //<ID> <tempo_ini> <tempo_fim>
 
-		nproc = nproc;
+		nproc = this.processos.size();
 
 		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
 		int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
