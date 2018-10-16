@@ -90,6 +90,7 @@ public class Escalonador{
 				break;
 			}
 		}
+
 		ordenarFila(filaEspera, 6);
 		
 		if(finalizado){
@@ -125,12 +126,15 @@ public class Escalonador{
 				String[] aux = filaSJFP.get(posicao).split(VIRGULA);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
 				filaSJFP.set(posicao, montagem);
+				
 				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao), tempo_corrente, true);
+				
 				aux = processoCorrente.split(VIRGULA);
 				montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
-				filaEspera.add(montagem);
+				filaSJFP.add(montagem);
 				posicao++;
 				cont = 1;
+
 			} else {
 				// false significa que não terminou
 				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao), tempo_corrente, false);
@@ -148,13 +152,13 @@ public class Escalonador{
 					filaEspera.add(montagem);
 					posicao++;
 					cont = 1;
+					
 				} else {
 					cont++;
 				}
 			}		
 			tempo_corrente++;
 		}
-
 	}
 
 	//ajeitar aqui
@@ -191,5 +195,7 @@ public class Escalonador{
     	for(int i = 0; i < escalonador.filaSJF.size(); i++){
 			System.out.println(escalonador.filaSJF.get(i));
 		}
+
+		//TODO: O erro talvez é que n to começando com nenhum processo e/ou não verifico se a fila está vazia
     }
 }
