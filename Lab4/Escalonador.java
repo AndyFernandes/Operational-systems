@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.IntStream; 
 
 public class Escalonador{
 	private static final String VIRGULA = ",";
@@ -180,18 +181,19 @@ public class Escalonador{
 		}
 	}
 
-	public  void RR(Bool saida){
-		int quantum = 3, time = 0, total_time, context = 0, ;
+	public  void RR(int saida){
+		int quantum = 3, time = 0, total_time, context = 0, nproc;
 
 		ArrayList<String> ganttRR; //<ID> <tempo_ini> <tempo_fim>
 
-		int rburst[this.processos.size()];	//vai contabilizar o burst restante de cada processo
-		int turnA[this.processos.size()];	//vai contabilizar o turnaround de cada processo 
-		int wait[this.processos.size()];	//vai acumular o tempo de espera dos processos
-		int last[this.processos.size()];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
+		nproc = nproc;
 
-
-		for (int i = 0; i < this.processos.size() ; i++){
+		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
+		int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
+		int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
+		int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
+		
+		for (int i = 0; i < nproc ; i++){
 			rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
 			turnA[i] = 0;
 			wait[i] = 0;
@@ -200,13 +202,13 @@ public class Escalonador{
 		total_time = IntStream.of(rburst).sum();
 
 		while( IntStream.of(rburst).sum() != 0){ // enquanto algum processo ainda tiver burst
-			for (int i = 0; i < this.processos.size() ; i++){
+			for (int i = 0; i < nproc ; i++){
 				if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
 					continue;
 				else if (rburst[i] >= quantum ){
 					if (turnA[i] == 0){
 						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0])
+						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
 					}
 					else{
 						wait[i] = wait[i] + (time - last[i]);
@@ -223,7 +225,7 @@ public class Escalonador{
 				else{
 					if (turnA[i] == 0){
 						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0])
+						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
 					}
 					else{
 						wait[i] = wait[i] + (time - last[i]);
@@ -244,12 +246,12 @@ public class Escalonador{
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
 			System.out.println( "b. Tempo total de processamento = " + total_time);
 			System.out.println( "c. Percentual de utilização da CPU ((tempo total - tempo troca de contexto)/tempo total) = " + total_time); // não sei como calcular o tempo de troca de contexto
-			System.out.println( "d. Média troughput dos processos = " + this.processos.size()/total_time );
-			System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/this.processos.size() );
-			System.out.println( "f. Média tempo de espera = " + IntStream.of(wait).sum()/this.processos.size() );
+			System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
+			System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
+			System.out.println( "f. Média tempo de espera = " + IntStream.of(wait).sum()/nproc );
 			System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
 			System.out.println( "h. Média de troca de contextos = " + context); 
-			System.out.println( "i. Número de processos executados = " + this.processos.size()); 
+			System.out.println( "i. Número de processos executados = " + nproc); 
 		}
 		else{
 			for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
