@@ -1,12 +1,9 @@
 // <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
 // Andreza:
-// > Terminar de debugar
-// > receber boolean if e else
 // > Calcular estatisticas
 // > Retonar vetor
 // Abraao:
 // > FCFS
-// > Debugar
 // UNIR OS CODIGOS
 import java.io.*;
 import java.util.Arrays;
@@ -17,6 +14,7 @@ import java.lang.Math;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.stream.IntStream; 
+import java.util.Scanner;
 
 public class Escalonador{
 	private static final String VIRGULA = ",";
@@ -75,12 +73,14 @@ public class Escalonador{
 		return clone;
 	}
 
+	// <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
 	public float percentualUsoCpu(ArrayList<String> fila){
 		// total-tempo troca contexto / tempo total
-		return 0;
+		return fila.size()/this.sumCpuBurst();
 	}
 
 	public float mediaThoughput(ArrayList<String> fila){
+
 		return 0;
 	}
 
@@ -153,7 +153,8 @@ public class Escalonador{
 		}
 	}
 
-	public void sjfpPreemptivo(boolean condicao){
+	// made Ddza
+	public void sjfp(String opcao){
 		this.filaSJFP = new ArrayList();
 		//fazer uma fila de espera de execução praqueles que ainda tão aguardando terminar de exec
 		ArrayList<String> filaEspera = new ArrayList();
@@ -222,15 +223,25 @@ public class Escalonador{
 			tempo_corrente++;
 		}
 
-		if(condicao){
+		if(opcao == "1"){
+			System.out.println("a. Algoritmo: SJF Preemptivo");
+			System.out.println("b. Tempo total de processamento: " + this.sumCpuBurst());
+			System.out.println("c. Percentual de utilização da CPU: ");
+			System.out.println("d. Média Throughput dos processos: ");
+			System.out.println("e. Média Turnaround dos processos: ");
+			System.out.println("f. Média Tempo de Espera dos processos: ");
+			System.out.println("g. Média de Tempo de Resposta dos processos: ");
+			System.out.println("h. Média de troca de contextos: ");
+			System.out.println("i. Número de processos executados: " + this.filaSJF.size());
+		} else if(opcao == "2"){
 
 		} else {
-
+			System.out.println("Opção inválida!");
 		}
 	}
 
 	//ajeitar aqui
-	public  void sjfNaoPreemptivo(){
+	public  void sjf(String opcao){
 		this.filaSJF = cloneComAlteracoes();
 		// Levar em consideração o tempo de chegada e o burst time
 		// DEIXAR ISSO AQUI MAIS BONITINHO e realmente testar se não vai ter conflito nessas duas condições do tempo de chegada com o burst time
@@ -246,9 +257,37 @@ public class Escalonador{
 				}
 			}
 		}
+
+		int tempo = 0;
+		for(int i = 0; i < filaSJF.size(); i++){
+			String aux [] = filaSJF.get(i).split(VIRGULA);
+			// tempo de inicio
+			aux[4] = Integer.toString(tempo);
+			// tempo de fim
+			tempo += Integer.parseInt(aux[2]); 
+			aux[5] = Integer.toString(tempo);
+			String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + aux[5] + ",0";
+			filaSJF.set(i, montagem); 
+		}
+
+		if(opcao == "1"){
+			System.out.println("a. Algoritmo: SJF não preemptivo");
+			System.out.println("b. Tempo total de processamento: " + this.sumCpuBurst());
+			System.out.println("c. Percentual de utilização da CPU: ");
+			System.out.println("d. Média Throughput dos processos: ");
+			System.out.println("e. Média Turnaround dos processos: ");
+			System.out.println("f. Média Tempo de Espera dos processos: ");
+			System.out.println("g. Média de Tempo de Resposta dos processos: ");
+			System.out.println("h. Média de troca de contextos: ");
+			System.out.println("i. Número de processos executados: " + this.filaSJF.size());
+		} else if(opcao == "2"){
+
+		} else {
+			System.out.println("Opção inválida!");
+		}
 	}
 
-	public  void rr(int saida){
+	public  void rr(String opcao){
 		int quantum = 3, time = 0, nproc;
 		float total_time, context = 0;
 
@@ -310,7 +349,7 @@ public class Escalonador{
 		}
 		context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
 
-		if (saida == 1) {//estatisticas
+		if (opcao == "1") {//estatisticas
 
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
 			System.out.println( "b. Tempo total de processamento = " + (total_time+context));
@@ -321,8 +360,7 @@ public class Escalonador{
 			System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
 			System.out.println( "h. Média de troca de contextos = " + context); 
 			System.out.println( "i. Número de processos executados = " + nproc); 
-		}
-		else{
+		} else if (opcao == "2"){
 			float proct;
 			for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
 				System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
@@ -330,27 +368,85 @@ public class Escalonador{
 				System.out.println( "b. Tempo de processamento = " + proct);
 				System.out.println();
 			}		
+		} else {
+			System.out.println("Opção inválida!");
 		}
+	}
 
+	public void fcfs(String opcao){
+
+
+		if(opcao == "1"){
+
+		} else if(opcao == "2"){
+
+		} else {
+			System.out.println("Opção inválida!");
+		}
+	}
+
+	public void priority(String opcao){
+		if(opcao == "1"){
+
+		} else if(opcao == "2"){
+
+		} else {
+			System.out.println("Opção inválida!");
+		}
+	}
+
+	public void priorityP(String opcao){
+		if(opcao == "1"){
+
+		} else if(opcao == "2"){
+
+		} else {
+			System.out.println("Opção inválida!");
+		}
 	}
 
 	public static void main(String[] args) throws Exception{
 		Escalonador escalonador = new Escalonador();  
+		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
-        //String[] dado
-        //System.out.println("Tempo Chegada: " + dados[0] + "| id: " + dados[1] + " | burst time: " + dados[2] + " | prioridade: " + dados[3] + "\n");
-    	//System.out.println(escalonador.sumCpuBurst());
-    	//ArrayList<String> teste = escalonador.cloneComAlteracoes();
-    	
-		escalonador.imprimir();
-		//escalonador.ordenarFila(escalonador.processos, 2);
-    	//escalonador.sjfpPreemptivo(true);
-    	escalonador.rr(0);
-    	//escalonador.imprimir();
-    	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
-			System.out.println(escalonador.filaSJFP.get(i));
-		}
+		// System.out.println("Digite o nome do arquivo desejado: ");
+		// String dados = reader.next();
+		
+		// escalonador.lerArquivo(dados);
 
-		//TODO: O erro talvez é que n to começando com nenhum processo e/ou não verifico se a fila está vazia
+		// System.out.println("Você deseja: \n (1) Visualizar Estatisticas\n(2) Lista de processos executados\n");
+		// String opcao = reader.next();
+
+		// System.out.println("Selecione o método desejado:\n(1) FCFS\n(2) SJF\n(3) SJFP\n(4) Priority\n(5) PriorityP\n(6) RR\n Por favor, selecione algum dos números acima");
+		// String opcAlgoritm = reader.next();
+    	
+  //   	switch(opcAlgoritm){
+  //   		case "1":
+  //   			escalonador.fcfs(opcao);
+  //   			break;
+  //   		case "2":
+  //   			escalonador.sjf(opcao);
+  //   			break;
+  //   		case "3":
+  //   			escalonador.sjfp(opcao);
+  //   			break;
+  //   		case "4":
+  //   			escalonador.priority(opcao);
+  //   			break;
+  //   		case "5":
+  //   			escalonador.priorityP(opcao);
+  //   			break;
+  //   		case "6":
+  //   			escalonador.rr(opcao);
+  //   			break;
+  //   		default:
+  //   			System.out.println("Opção selecionada inválida");
+  //   			break;
+  //   	};
+		escalonador.sjf("1");
+		for(int i = 0; i < escalonador.filaSJF.size(); i++){
+			System.out.println(escalonador.filaSJF.get(i));
+		}
+    	
     }
 }

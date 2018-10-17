@@ -1,30 +1,6 @@
-############## Usar para comparar: ###################
-
-> Executar o arquivo de dados (que é o mesmo usado no simulado)
-	> Falta executar pro FCFS
-	> SJFP Não-preemptivo
-	> SJFP preemptivo
-	> Priority não-preemptivo
-
-	> Calcular para cada um:
-								b. Tempo	total de	processamento	(somando	todos	os	processos);
-								c. Percentual	de	utilização da CPU (tempo	total-tempo	troca	contexto)/tempo	total);
-								d. Media	Throughput dos	processos;
-								e. Media	Turnaround dos	processos
-								f. Media	Tempo	de	Espera dos	processos
-								g. Media	de	Tempo	de	Resposta dos	processos
-								h. Média	de	troca	de	contextos;
-								i. Numero	de	Processos executados
-
-
 ---------------------------------------------------------------------------
 ############## CODIGOS ##################
 > FCFS
-> SJFP Não-preemptivo
-> SJFP preemptivo
-> Priority não-preemptivo
-> Priority preemptivo
-> RR
 
 > Método para impressão das estatisticas
 						a. Cabeçalho	contendo	o	nome	do	algoritmo	e	a	lista	dos	parâmetros;
