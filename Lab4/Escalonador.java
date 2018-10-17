@@ -94,39 +94,24 @@ public class Escalonador{
 	public String buscarProcesso(ArrayList<String> clone, ArrayList<String> filaEspera, String processoAtual, int tempo_corrente, boolean finalizado){
 		// FAZENDO A BUSCA
 		// TODO: Ver se não tem como eu começar da ultima posicao que vasculhei
-		// System.out.println("PAREI AQUI");
 		for(int i = 0; i < clone.size(); i++){
-				// String [] teste = clone.get(i).split(VIRGULA);
-				// System.out.println("CPU:" + teste[0]);
-				// System.out.println("Tempo corrente" + tempo_corrente);
-				// System.out.println(Integer.parseInt(teste[0]) == tempo_corrente);
 				if(Integer.parseInt(clone.get(i).split(VIRGULA)[0]) == tempo_corrente){
-					System.out.println("OLA");
 					filaEspera.add(clone.get(i));
 				} else if(Integer.parseInt(clone.get(i).split(VIRGULA)[0]) > tempo_corrente){
-					// System.out.println(clone.get(i));
-					// String [] teste = clone.get(i).split(VIRGULA);
-					// System.out.println("DEI O BREAK");
-				break;
-			}
+					break;
+				}
 		}
 
-		System.out.println("TAMANHO FILA ESPERA: " + filaEspera.size());
 		ordenarFila(filaEspera, 6);
 		
 		if(finalizado && !filaEspera.isEmpty()){
-			// System.out.println("eu parei aqui");
 			String proc = filaEspera.get(0);
-			// System.out.println("processo: " + proc);
 			filaEspera.remove(0);
-			System.out.println(filaEspera.size());
 			return proc;
 		} else if (!filaEspera.isEmpty()){
-			System.out.println("TO AQUI");
 			if(Integer.parseInt(filaEspera.get(0).split(VIRGULA)[6]) < Integer.parseInt(processoAtual.split(VIRGULA)[6])){
 				String proc = filaEspera.get(0);
 				filaEspera.remove(0);
-				System.out.println(filaEspera.size());
 				return proc;
 			} else {
 				return processoAtual;
@@ -148,34 +133,31 @@ public class Escalonador{
 		int cont = 0;
 		String processoCorrente;
 
-		while(tempo_corrente < this.sumCpuBurst()){
+		while(tempo_corrente <= this.sumCpuBurst()){
 			// verificar aqui se o processo terminou, se sim manda a flag(ai ele olha a fila de espera)
 			// posicao com cpu burst restante é a 6
 			// se não ele olha somente se há novos processos
-			System.out.println("Tempo crrente: " + tempo_corrente);
-			System.out.println("tamanho da minha fila ganntt: " + filaSJFP.size());
-			// System.out.println("Cont: " + cont);
-			// if(tempo_corrente > 0){
-			// 	System.out.println(cont == Integer.parseInt(filaSJFP.get(posicao-1).split(VIRGULA)[6]));	
-			// }
 			if(tempo_corrente == 0){
-				System.out.println("ENTREI AQ");
+				
 				processoCorrente = buscarProcesso(clone, filaEspera, "", tempo_corrente, true);
-				System.out.println("Processo corrente: " + processoCorrente);
+			
 				String [] aux = processoCorrente.split(VIRGULA);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
 				filaSJFP.add(montagem);
-				System.out.println("Tamanho fila SJFP: " + filaSJFP.size() + "\n Elemento:");
+				
 				for(int i = 0; i < filaSJFP.size(); i++){
 					System.out.println(filaSJFP.get(i));
 				}
 				posicao++;
 				cont = 0;
+			} else if(tempo_corrente == this.sumCpuBurst()){
+				String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
+				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
+				filaSJFP.set(posicao-1, montagem);
 			} else if(cont == Integer.parseInt(filaSJFP.get(posicao-1).split(VIRGULA)[6])){
-				System.out.println("ENTREI AQUI 1 ");
+				
 				// true significa que terminou
 				String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
-				System.out.println("Teste aux: " + aux[0]);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
 				filaSJFP.set(posicao-1, montagem);
 				
@@ -188,28 +170,22 @@ public class Escalonador{
 				cont = 0;
 
 			} else {
-				System.out.println("ENTREI AQUI 2 ");
 				// false significa que não terminou
 				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao-1), tempo_corrente, false);
-				System.out.println("PASSEI DAQUI TROUXA");
-				System.out.println(processoCorrente != filaSJFP.get(posicao-1));
+
 				if(processoCorrente != filaSJFP.get(posicao-1)){
 					// atualiza o tempo que falta para executar do processo na string ou só no cont? se for no cont tem que mandar pro buscarProcesso
 					// adiciona o processo na fila de espera
 					// adiciona o novo processo na fila
 					// cont = 1
-					System.out.println("Vim pra cá");
 					String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
 					String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + "," + Integer.toString((Integer.parseInt(aux[6]) - cont));
 					filaSJFP.set(posicao-1, montagem);
 					filaEspera.add(montagem);
-					System.out.println(filaSJFP.get(posicao-1));
 					
 					aux = processoCorrente.split(VIRGULA);
 					montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
 					filaSJFP.add(montagem);
-					System.out.println(filaSJFP.size());
-					System.out.println(filaEspera.size());
 					posicao++;
 					cont = 0;
 					
@@ -333,8 +309,8 @@ public class Escalonador{
 		//escalonador.ordenarFila(escalonador.processos, 2);
     	escalonador.sjfpPreemptivo();
     	//escalonador.imprimir();
-    	for(int i = 0; i < escalonador.filaSJF.size(); i++){
-			System.out.println(escalonador.filaSJF.get(i));
+    	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
+			System.out.println(escalonador.filaSJFP.get(i));
 		}
 
 		//TODO: O erro talvez é que n to começando com nenhum processo e/ou não verifico se a fila está vazia
