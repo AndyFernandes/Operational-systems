@@ -84,24 +84,45 @@ public class Escalonador{
 	public String buscarProcesso(ArrayList<String> clone, ArrayList<String> filaEspera, String processoAtual, int tempo_corrente, boolean finalizado){
 		// FAZENDO A BUSCA
 		// TODO: Ver se não tem como eu começar da ultima posicao que vasculhei
+		// System.out.println("PAREI AQUI");
 		for(int i = 0; i < clone.size(); i++){
-				if(clone.get(i).split(VIRGULA)[0] == Integer.toString(tempo_corrente)){
+				// String [] teste = clone.get(i).split(VIRGULA);
+				// System.out.println("CPU:" + teste[0]);
+				// System.out.println("Tempo corrente" + tempo_corrente);
+				// System.out.println(Integer.parseInt(teste[0]) == tempo_corrente);
+				if(Integer.parseInt(clone.get(i).split(VIRGULA)[0]) == tempo_corrente){
+					System.out.println("OLA");
 					filaEspera.add(clone.get(i));
 				} else if(Integer.parseInt(clone.get(i).split(VIRGULA)[0]) > tempo_corrente){
+					// System.out.println(clone.get(i));
+					// String [] teste = clone.get(i).split(VIRGULA);
+					// System.out.println("DEI O BREAK");
 				break;
 			}
 		}
 
+		System.out.println("TAMANHO FILA ESPERA: " + filaEspera.size());
 		ordenarFila(filaEspera, 6);
 		
-		if(finalizado){
-			return filaEspera.remove(0);
-		} else{
+		if(finalizado && !filaEspera.isEmpty()){
+			// System.out.println("eu parei aqui");
+			String proc = filaEspera.get(0);
+			// System.out.println("processo: " + proc);
+			filaEspera.remove(0);
+			System.out.println(filaEspera.size());
+			return proc;
+		} else if (!filaEspera.isEmpty()){
+			System.out.println("TO AQUI");
 			if(Integer.parseInt(filaEspera.get(0).split(VIRGULA)[6]) < Integer.parseInt(processoAtual.split(VIRGULA)[6])){
-				return filaEspera.remove(0);
+				String proc = filaEspera.get(0);
+				filaEspera.remove(0);
+				System.out.println(filaEspera.size());
+				return proc;
 			} else {
 				return processoAtual;
 			}
+		} else{
+			return processoAtual;
 		}
 	}
 
@@ -121,38 +142,66 @@ public class Escalonador{
 			// verificar aqui se o processo terminou, se sim manda a flag(ai ele olha a fila de espera)
 			// posicao com cpu burst restante é a 6
 			// se não ele olha somente se há novos processos
-			
-			if(cont == Integer.parseInt(filaSJFP.get(posicao).split(VIRGULA)[6])){
+			System.out.println("Tempo crrente: " + tempo_corrente);
+			System.out.println("tamanho da minha fila ganntt: " + filaSJFP.size());
+			// System.out.println("Cont: " + cont);
+			// if(tempo_corrente > 0){
+			// 	System.out.println(cont == Integer.parseInt(filaSJFP.get(posicao-1).split(VIRGULA)[6]));	
+			// }
+			if(tempo_corrente == 0){
+				System.out.println("ENTREI AQ");
+				processoCorrente = buscarProcesso(clone, filaEspera, "", tempo_corrente, true);
+				System.out.println("Processo corrente: " + processoCorrente);
+				String [] aux = processoCorrente.split(VIRGULA);
+				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
+				filaSJFP.add(montagem);
+				System.out.println("Tamanho fila SJFP: " + filaSJFP.size() + "\n Elemento:");
+				for(int i = 0; i < filaSJFP.size(); i++){
+					System.out.println(filaSJFP.get(i));
+				}
+				posicao++;
+				cont = 0;
+			} else if(cont == Integer.parseInt(filaSJFP.get(posicao-1).split(VIRGULA)[6])){
+				System.out.println("ENTREI AQUI 1 ");
 				// true significa que terminou
-				String[] aux = filaSJFP.get(posicao).split(VIRGULA);
+				String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
+				System.out.println("Teste aux: " + aux[0]);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
-				filaSJFP.set(posicao, montagem);
+				filaSJFP.set(posicao-1, montagem);
 				
-				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao), tempo_corrente, true);
+				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao-1), tempo_corrente, true);
 				
 				aux = processoCorrente.split(VIRGULA);
 				montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
 				filaSJFP.add(montagem);
 				posicao++;
-				cont = 1;
+				cont = 0;
 
 			} else {
+				System.out.println("ENTREI AQUI 2 ");
 				// false significa que não terminou
-				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao), tempo_corrente, false);
-				if(processoCorrente != filaSJFP.get(posicao)){
+				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao-1), tempo_corrente, false);
+				System.out.println("PASSEI DAQUI TROUXA");
+				System.out.println(processoCorrente != filaSJFP.get(posicao-1));
+				if(processoCorrente != filaSJFP.get(posicao-1)){
 					// atualiza o tempo que falta para executar do processo na string ou só no cont? se for no cont tem que mandar pro buscarProcesso
 					// adiciona o processo na fila de espera
 					// adiciona o novo processo na fila
 					// cont = 1
-					String[] aux = filaSJFP.get(posicao).split(VIRGULA);
-					String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
-					filaSJFP.set(posicao, montagem);
+					System.out.println("Vim pra cá");
+					String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
+					String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + "," + Integer.toString((Integer.parseInt(aux[6]) - cont));
+					filaSJFP.set(posicao-1, montagem);
+					filaEspera.add(montagem);
+					System.out.println(filaSJFP.get(posicao-1));
 					
 					aux = processoCorrente.split(VIRGULA);
 					montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
-					filaEspera.add(montagem);
+					filaSJFP.add(montagem);
+					System.out.println(filaSJFP.size());
+					System.out.println(filaEspera.size());
 					posicao++;
-					cont = 1;
+					cont = 0;
 					
 				} else {
 					cont++;
@@ -181,86 +230,86 @@ public class Escalonador{
 		}
 	}
 
-	public  void RR(int saida){
-		int quantum = 3, time = 0, total_time, context = 0, nproc;
+	// public  void RR(int saida){
+	// 	int quantum = 3, time = 0, total_time, context = 0, nproc;
 
-		ArrayList<String> ganttRR; //<ID> <tempo_ini> <tempo_fim>
+	// 	ArrayList<String> ganttRR; //<ID> <tempo_ini> <tempo_fim>
 
-		nproc = this.processos.size();
+	// 	nproc = this.processos.size();
 
-		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
-		int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
-		int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
-		int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
+	// 	int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
+	// 	int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
+	// 	int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
+	// 	int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
 		
-		for (int i = 0; i < nproc ; i++){
-			rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
-			turnA[i] = 0;
-			wait[i] = 0;
-		}
+	// 	for (int i = 0; i < nproc ; i++){
+	// 		rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
+	// 		turnA[i] = 0;
+	// 		wait[i] = 0;
+	// 	}
 
-		total_time = IntStream.of(rburst).sum();
+	// 	total_time = IntStream.of(rburst).sum();
 
-		while( IntStream.of(rburst).sum() != 0){ // enquanto algum processo ainda tiver burst
-			for (int i = 0; i < nproc ; i++){
-				if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
-					continue;
-				else if (rburst[i] >= quantum ){
-					if (turnA[i] == 0){
-						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
-					}
-					else{
-						wait[i] = wait[i] + (time - last[i]);
-					}
-					rburst[i] = rburst[i] - quantum;	// reduz o tempo que foi processado 
-					String [] aux = filaSJFP.get(posicao).split(VIRGULA);
-					String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum); // montando linha do gantt, vai ser no seguinte formato: //<ID> <tempo_ini> <tempo_fim>
-					ganttRR.add(mount);
-					time = time + quantum;	//atualizando o tempo
-					last[i] = time;
-					context = context +1;	//adicionando troca de contexto
-					if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
-				}
-				else{
-					if (turnA[i] == 0){
-						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
-					}
-					else{
-						wait[i] = wait[i] + (time - last[i]);
-					}
-					String [] aux = filaSJFP.get(posicao).split(VIRGULA);
-					String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum);
-					ganttRR.add(mount);
-					time = time + rburst[i];
-					rburst[i] = 0;
-					turnA[i] = time - turnA[i];
-					context = context +1;
-				}
-			}
-		}
-		context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
+	// 	while( IntStream.of(rburst).sum() != 0){ // enquanto algum processo ainda tiver burst
+	// 		for (int i = 0; i < nproc ; i++){
+	// 			if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
+	// 				continue;
+	// 			else if (rburst[i] >= quantum ){
+	// 				if (turnA[i] == 0){
+	// 					turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+	// 					wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+	// 				}
+	// 				else{
+	// 					wait[i] = wait[i] + (time - last[i]);
+	// 				}
+	// 				rburst[i] = rburst[i] - quantum;	// reduz o tempo que foi processado 
+	// 				String [] aux = filaSJFP.get(posicao).split(VIRGULA);
+	// 				String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum); // montando linha do gantt, vai ser no seguinte formato: //<ID> <tempo_ini> <tempo_fim>
+	// 				ganttRR.add(mount);
+	// 				time = time + quantum;	//atualizando o tempo
+	// 				last[i] = time;
+	// 				context = context +1;	//adicionando troca de contexto
+	// 				if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
+	// 			}
+	// 			else{
+	// 				if (turnA[i] == 0){
+	// 					turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+	// 					wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+	// 				}
+	// 				else{
+	// 					wait[i] = wait[i] + (time - last[i]);
+	// 				}
+	// 				String [] aux = filaSJFP.get(posicao).split(VIRGULA);
+	// 				String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum);
+	// 				ganttRR.add(mount);
+	// 				time = time + rburst[i];
+	// 				rburst[i] = 0;
+	// 				turnA[i] = time - turnA[i];
+	// 				context = context +1;
+	// 			}
+	// 		}
+	// 	}
+	// 	context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
 
-		if (saida == 1) {//estatisticas
-			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
-			System.out.println( "b. Tempo total de processamento = " + total_time);
-			System.out.println( "c. Percentual de utilização da CPU ((tempo total - tempo troca de contexto)/tempo total) = " + total_time); // não sei como calcular o tempo de troca de contexto
-			System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
-			System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
-			System.out.println( "f. Média tempo de espera = " + IntStream.of(wait).sum()/nproc );
-			System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
-			System.out.println( "h. Média de troca de contextos = " + context); 
-			System.out.println( "i. Número de processos executados = " + nproc); 
-		}
-		else{
-			for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
-				System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
-				System.out.println( "b. Tempo de processamento = " + quantum);
-			}		
-		}
+	// 	if (saida == 1) {//estatisticas
+	// 		System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
+	// 		System.out.println( "b. Tempo total de processamento = " + total_time);
+	// 		System.out.println( "c. Percentual de utilização da CPU ((tempo total - tempo troca de contexto)/tempo total) = " + total_time); // não sei como calcular o tempo de troca de contexto
+	// 		System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
+	// 		System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
+	// 		System.out.println( "f. Média tempo de espera = " + IntStream.of(wait).sum()/nproc );
+	// 		System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
+	// 		System.out.println( "h. Média de troca de contextos = " + context); 
+	// 		System.out.println( "i. Número de processos executados = " + nproc); 
+	// 	}
+	// 	else{
+	// 		for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
+	// 			System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
+	// 			System.out.println( "b. Tempo de processamento = " + quantum);
+	// 		}		
+	// 	}
 
-	}
+	// }
 
 	public static void main(String[] args) throws Exception{
 		Escalonador escalonador = new Escalonador();  
@@ -270,9 +319,9 @@ public class Escalonador{
     	//System.out.println(escalonador.sumCpuBurst());
     	//ArrayList<String> teste = escalonador.cloneComAlteracoes();
     	
-		//escalonador.imprimir();
+		escalonador.imprimir();
 		//escalonador.ordenarFila(escalonador.processos, 2);
-    	escalonador.sjfNaoPreemptivo();
+    	escalonador.sjfpPreemptivo();
     	//escalonador.imprimir();
     	for(int i = 0; i < escalonador.filaSJF.size(); i++){
 			System.out.println(escalonador.filaSJF.get(i));
