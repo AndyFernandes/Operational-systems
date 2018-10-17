@@ -248,8 +248,8 @@ public class Escalonador{
 		}
 	}
 
-	public  void rr(int saida){
-		int quantum = 3, time = 0, nproc;
+	public  void rr(boolean saida){
+		int quantum = 20, time = 0, nproc;
 		float total_time, context = 0;
 
 		ArrayList<String> ganttRR = new ArrayList(); //<ID> <tempo_ini> <tempo_fim>
@@ -259,12 +259,15 @@ public class Escalonador{
 		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
 		int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
 		int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
+		int[] resp = new int[nproc];	//vai acumular o tempo de espera dos processos
 		int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
+		boolean[] touch = new boolean[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
 		
 		for (int i = 0; i < nproc ; i++){
 			rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
 			turnA[i] = 0;
 			wait[i] = 0;
+			touch[i] = false;
 		}
 
 		total_time = IntStream.of(rburst).sum();
@@ -274,9 +277,11 @@ public class Escalonador{
 				if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
 					continue;
 				else if (rburst[i] >= quantum ){
-					if (turnA[i] == 0){
+					if (touch[i] == false){
 						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
 						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+						resp[i] = wait[i];
+						touch[i] = true;
 					}
 					else{
 						wait[i] = wait[i] + (time - last[i]);
@@ -291,9 +296,11 @@ public class Escalonador{
 					if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
 				}
 				else{
-					if (turnA[i] == 0){
+					if (touch[i] == false){
 						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
 						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+						resp[i] = wait[i];
+						touch[i] = true;
 					}
 					else{
 						wait[i] = wait[i] + (time - last[i]);
@@ -308,19 +315,19 @@ public class Escalonador{
 				}
 			}
 		}
-		context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
+		context = context - 1;	//ajuste necessário, pois o primeiro processamento n envolve troca de contexto		
 
-		if (saida == 1) {//estatisticas
+		if (saida == true) {//estatisticas
 
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
-			System.out.println( "b. Tempo total de processamento = " + (total_time+context));
+			System.out.println( "b. Tempo total de processamento = " + (total_time));
 			System.out.println( "c. Percentual de utilização da CPU  = " + ((total_time)/(total_time+context))); // não sei como calcular o tempo de troca de contexto
 			System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
-			System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
+			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
-			System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
-			System.out.println( "h. Média de troca de contextos = " + context); 
-			System.out.println( "i. Número de processos executados = " + nproc); 
+			System.out.println( "g. Média tempo de Resposta dos processos = " +  (float) IntStream.of(resp).sum()/nproc ); // não sei como calcular o tempo de respostaa
+			System.out.println( "h. Média de troca de contextos = " + (float) context/nproc); 
+			System.out.println( "i. Número de processos executados = " + nproc);
 		}
 		else{
 			float proct;
@@ -331,12 +338,11 @@ public class Escalonador{
 				System.out.println();
 			}		
 		}
-
 	}
 
 	public static void main(String[] args) throws Exception{
 		Escalonador escalonador = new Escalonador();  
-		escalonador.lerArquivo("dados.csv");
+		escalonador.lerArquivo("dados-1.csv");
         //String[] dado
         //System.out.println("Tempo Chegada: " + dados[0] + "| id: " + dados[1] + " | burst time: " + dados[2] + " | prioridade: " + dados[3] + "\n");
     	//System.out.println(escalonador.sumCpuBurst());
@@ -345,11 +351,11 @@ public class Escalonador{
 		escalonador.imprimir();
 		//escalonador.ordenarFila(escalonador.processos, 2);
     	//escalonador.sjfpPreemptivo(true);
-    	escalonador.rr(0);
+    	escalonador.rr(true);
     	//escalonador.imprimir();
-    	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
-			System.out.println(escalonador.filaSJFP.get(i));
-		}
+  //   	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
+		// 	System.out.println(escalonador.filaSJFP.get(i));
+		// }
 
 		//TODO: O erro talvez é que n to começando com nenhum processo e/ou não verifico se a fila está vazia
     }
