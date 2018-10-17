@@ -1,5 +1,4 @@
 // <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
-// O que falta:
 // Andreza:
 // > Terminar de debugar
 // > receber boolean if e else
@@ -76,6 +75,39 @@ public class Escalonador{
 		return clone;
 	}
 
+	public float percentualUsoCpu(ArrayList<String> fila){
+		// total-tempo troca contexto / tempo total
+		return 0;
+	}
+
+	public float mediaThoughput(ArrayList<String> fila){
+		return 0;
+	}
+
+	public float mediaTempoEspera(ArrayList<String> fila){
+		//devo levar em consideração quando o processo chegou e quando ele subiu pra executar a primeira vez
+		return 0;
+	}
+
+	public float mediaTurnAround(ArrayList<String> fila){
+		// soma do cpu burst do processo + espera
+		return 0;
+	}
+
+	public float mediaTempoResposta(ArrayList<String> fila){
+		// devo levar em consideração a primeira vez que o processo executou e quando ele chegou.
+		return 0;
+	}
+
+	public float mediaTrocaContexto(ArrayList<String> fila){
+		// quantas vezes trocou de processos / numero de processos
+		return 0;
+	}
+
+	public float numProcessosExecutados(){
+		return this.processos.size();
+	}
+
 	// Se o processo tiver finalizado:
 		// 1º Olha se a fila de espera está vazia
 		// Se não estiver:  1.a. Olha se chegou nesse instante processos com cpu burst menor do que a cabeça da fila de espera. 
@@ -121,7 +153,7 @@ public class Escalonador{
 		}
 	}
 
-	public void sjfpPreemptivo(){
+	public void sjfpPreemptivo(boolean condicao){
 		this.filaSJFP = new ArrayList();
 		//fazer uma fila de espera de execução praqueles que ainda tão aguardando terminar de exec
 		ArrayList<String> filaEspera = new ArrayList();
@@ -138,16 +170,11 @@ public class Escalonador{
 			// posicao com cpu burst restante é a 6
 			// se não ele olha somente se há novos processos
 			if(tempo_corrente == 0){
-				
 				processoCorrente = buscarProcesso(clone, filaEspera, "", tempo_corrente, true);
 			
 				String [] aux = processoCorrente.split(VIRGULA);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
 				filaSJFP.add(montagem);
-				
-				for(int i = 0; i < filaSJFP.size(); i++){
-					System.out.println(filaSJFP.get(i));
-				}
 				posicao++;
 				cont = 0;
 			} else if(tempo_corrente == this.sumCpuBurst()){
@@ -155,7 +182,6 @@ public class Escalonador{
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
 				filaSJFP.set(posicao-1, montagem);
 			} else if(cont == Integer.parseInt(filaSJFP.get(posicao-1).split(VIRGULA)[6])){
-				
 				// true significa que terminou
 				String[] aux = filaSJFP.get(posicao-1).split(VIRGULA);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + aux[4] + "," + Integer.toString(tempo_corrente) + ",0";
@@ -194,6 +220,12 @@ public class Escalonador{
 				}
 			}		
 			tempo_corrente++;
+		}
+
+		if(condicao){
+
+		} else {
+
 		}
 	}
 
@@ -307,7 +339,7 @@ public class Escalonador{
     	
 		escalonador.imprimir();
 		//escalonador.ordenarFila(escalonador.processos, 2);
-    	escalonador.sjfpPreemptivo();
+    	escalonador.sjfpPreemptivo(true);
     	//escalonador.imprimir();
     	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
 			System.out.println(escalonador.filaSJFP.get(i));
