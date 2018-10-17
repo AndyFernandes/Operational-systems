@@ -248,86 +248,91 @@ public class Escalonador{
 		}
 	}
 
-	// public  void RR(int saida){
-	// 	int quantum = 3, time = 0, total_time, context = 0, nproc;
+	public  void rr(int saida){
+		int quantum = 3, time = 0, nproc;
+		float total_time, context = 0;
 
-	// 	ArrayList<String> ganttRR; //<ID> <tempo_ini> <tempo_fim>
+		ArrayList<String> ganttRR = new ArrayList(); //<ID> <tempo_ini> <tempo_fim>
 
-	// 	nproc = this.processos.size();
+		nproc = this.processos.size();
 
-	// 	int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
-	// 	int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
-	// 	int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
-	// 	int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
+		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
+		int[] turnA = new int[nproc];	//vai contabilizar o turnaround de cada processo 
+		int[] wait = new int[nproc];	//vai acumular o tempo de espera dos processos
+		int[] last = new int[nproc];	//vai guardar o ultimo tempo de processamento, auxiliar pra waiting time
 		
-	// 	for (int i = 0; i < nproc ; i++){
-	// 		rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
-	// 		turnA[i] = 0;
-	// 		wait[i] = 0;
-	// 	}
+		for (int i = 0; i < nproc ; i++){
+			rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
+			turnA[i] = 0;
+			wait[i] = 0;
+		}
 
-	// 	total_time = IntStream.of(rburst).sum();
+		total_time = IntStream.of(rburst).sum();
 
-	// 	while( IntStream.of(rburst).sum() != 0){ // enquanto algum processo ainda tiver burst
-	// 		for (int i = 0; i < nproc ; i++){
-	// 			if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
-	// 				continue;
-	// 			else if (rburst[i] >= quantum ){
-	// 				if (turnA[i] == 0){
-	// 					turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-	// 					wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
-	// 				}
-	// 				else{
-	// 					wait[i] = wait[i] + (time - last[i]);
-	// 				}
-	// 				rburst[i] = rburst[i] - quantum;	// reduz o tempo que foi processado 
-	// 				String [] aux = filaSJFP.get(posicao).split(VIRGULA);
-	// 				String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum); // montando linha do gantt, vai ser no seguinte formato: //<ID> <tempo_ini> <tempo_fim>
-	// 				ganttRR.add(mount);
-	// 				time = time + quantum;	//atualizando o tempo
-	// 				last[i] = time;
-	// 				context = context +1;	//adicionando troca de contexto
-	// 				if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
-	// 			}
-	// 			else{
-	// 				if (turnA[i] == 0){
-	// 					turnA[i] = time; // salva o tempo do primeiro processamento de um processo
-	// 					wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
-	// 				}
-	// 				else{
-	// 					wait[i] = wait[i] + (time - last[i]);
-	// 				}
-	// 				String [] aux = filaSJFP.get(posicao).split(VIRGULA);
-	// 				String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum);
-	// 				ganttRR.add(mount);
-	// 				time = time + rburst[i];
-	// 				rburst[i] = 0;
-	// 				turnA[i] = time - turnA[i];
-	// 				context = context +1;
-	// 			}
-	// 		}
-	// 	}
-	// 	context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
+		while( IntStream.of(rburst).sum() != 0){ // enquanto algum processo ainda tiver burst
+			for (int i = 0; i < nproc ; i++){
+				if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
+					continue;
+				else if (rburst[i] >= quantum ){
+					if (turnA[i] == 0){
+						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+					}
+					else{
+						wait[i] = wait[i] + (time - last[i]);
+					}
+					rburst[i] = rburst[i] - quantum;	// reduz o tempo que foi processado 
+					String [] aux = processos.get(i).split(VIRGULA);
+					String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + quantum); // montando linha do gantt, vai ser no seguinte formato: //<ID> <tempo_ini> <tempo_fim>
+					ganttRR.add(mount);
+					time = time + quantum;	//atualizando o tempo
+					last[i] = time;
+					context = context +1;	//adicionando troca de contexto
+					if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
+				}
+				else{
+					if (turnA[i] == 0){
+						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+					}
+					else{
+						wait[i] = wait[i] + (time - last[i]);
+					}
+					String [] aux = processos.get(i).split(VIRGULA);
+					String mount = aux[1] + "," + Integer.toString(time) + "," + Integer.toString(time + rburst[i]);
+					ganttRR.add(mount);
+					time = time + rburst[i];
+					rburst[i] = 0;
+					turnA[i] = time - turnA[i];
+					context = context +1;
+				}
+			}
+		}
+		context = context - 1; //ajuste necessário, pois o primeiro processamento n envolve troca de contexto
 
-	// 	if (saida == 1) {//estatisticas
-	// 		System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
-	// 		System.out.println( "b. Tempo total de processamento = " + total_time);
-	// 		System.out.println( "c. Percentual de utilização da CPU ((tempo total - tempo troca de contexto)/tempo total) = " + total_time); // não sei como calcular o tempo de troca de contexto
-	// 		System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
-	// 		System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
-	// 		System.out.println( "f. Média tempo de espera = " + IntStream.of(wait).sum()/nproc );
-	// 		System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
-	// 		System.out.println( "h. Média de troca de contextos = " + context); 
-	// 		System.out.println( "i. Número de processos executados = " + nproc); 
-	// 	}
-	// 	else{
-	// 		for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
-	// 			System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
-	// 			System.out.println( "b. Tempo de processamento = " + quantum);
-	// 		}		
-	// 	}
+		if (saida == 1) {//estatisticas
 
-	// }
+			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
+			System.out.println( "b. Tempo total de processamento = " + (total_time+context));
+			System.out.println( "c. Percentual de utilização da CPU  = " + ((total_time)/(total_time+context))); // não sei como calcular o tempo de troca de contexto
+			System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
+			System.out.println( "e. Média turnaround dos processos = " + IntStream.of(turnA).sum()/nproc );
+			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
+			System.out.println( "g. Média tempo de Resposta dos processos = "); // não sei como calcular o tempo de respostaa
+			System.out.println( "h. Média de troca de contextos = " + context); 
+			System.out.println( "i. Número de processos executados = " + nproc); 
+		}
+		else{
+			float proct;
+			for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
+				System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
+				proct = (Integer.parseInt(ganttRR.get(i).split(VIRGULA)[2]) - Integer.parseInt(ganttRR.get(i).split(VIRGULA)[1]));
+				System.out.println( "b. Tempo de processamento = " + proct);
+				System.out.println();
+			}		
+		}
+
+	}
 
 	public static void main(String[] args) throws Exception{
 		Escalonador escalonador = new Escalonador();  
@@ -339,7 +344,8 @@ public class Escalonador{
     	
 		escalonador.imprimir();
 		//escalonador.ordenarFila(escalonador.processos, 2);
-    	escalonador.sjfpPreemptivo(true);
+    	//escalonador.sjfpPreemptivo(true);
+    	escalonador.rr(0);
     	//escalonador.imprimir();
     	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
 			System.out.println(escalonador.filaSJFP.get(i));
