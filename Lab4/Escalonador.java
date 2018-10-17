@@ -1,4 +1,14 @@
 // <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
+// O que falta:
+// Andreza:
+// > Terminar de debugar
+// > receber boolean if e else
+// > Calcular estatisticas
+// > Retonar vetor
+// Abraao:
+// > FCFS
+// > Debugar
+// UNIR OS CODIGOS
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
