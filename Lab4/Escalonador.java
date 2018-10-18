@@ -1,9 +1,6 @@
 // <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
 // Andreza:
 // > Calcular estatisticas
-// > Retonar vetor
-// Abraao:
-// > FCFS
 // UNIR OS CODIGOS
 import java.io.*;
 import java.util.Arrays;
@@ -35,9 +32,9 @@ public class Escalonador{
         }
 	}
 
-	public void imprimir(){
-		for(int i = 0; i < this.processos.size(); i++){
-			System.out.println(this.processos.get(i));
+	public void imprimir(ArrayList<String> fila){
+		for(int i = 0; i < fila.size(); i++){
+			System.out.println(fila.get(i));
 		}
 	}
 
@@ -53,11 +50,11 @@ public class Escalonador{
 		// algoritmo de ordenação em relação ao tempo que falta (posicaoRelativa)
 		for(int i = 0; i < fila.size(); i++){
 			for(int j = 0; j < i; j++){
-					if(Integer.parseInt(fila.get(i).split(VIRGULA)[posicaoRelativa]) <= Integer.parseInt(fila.get(j).split(VIRGULA)[posicaoRelativa])){
-						String aux = fila.get(j);
-						fila.set(j, fila.get(i));
-						fila.set(i, aux);
-					}
+				if(Integer.parseInt(fila.get(i).split(VIRGULA)[posicaoRelativa]) <= Integer.parseInt(fila.get(j).split(VIRGULA)[posicaoRelativa])){
+					String aux = fila.get(j);
+					fila.set(j, fila.get(i));
+					fila.set(i, aux);
+				}
 			}
 		}
 	}
@@ -121,9 +118,9 @@ public class Escalonador{
             	}	
             }
 	    }
-
     }
 
+    ////////////////////////////////////// EXPLICACAO DO ALGORITMO ABAIXO //////////////////////////////////
 	// Se o processo tiver finalizado:
 		// 1º Olha se a fila de espera está vazia
 		// Se não estiver:  1.a. Olha se chegou nesse instante processos com cpu burst menor do que a cabeça da fila de espera. 
@@ -149,9 +146,7 @@ public class Escalonador{
 					break;
 				}
 		}
-
 		ordenarFila(filaEspera, 6);
-		
 		if(finalizado && !filaEspera.isEmpty()){
 			String proc = filaEspera.get(0);
 			filaEspera.remove(0);
@@ -164,17 +159,14 @@ public class Escalonador{
 			} else {
 				return processoAtual;
 			}
-		} else{
+		} else {
 			return processoAtual;
 		}
 	}
 
-	// made Ddza
 	public void sjfp(String opcao){
 		this.filaSJFP = new ArrayList();
-		//fazer uma fila de espera de execução praqueles que ainda tão aguardando terminar de exec
 		ArrayList<String> filaEspera = new ArrayList();
-		//fazer a refatoração do formato dos processos aqui
 		ArrayList<String> clone = this.cloneComAlteracoes();
 
 		int tempo_corrente = 0;
@@ -188,7 +180,6 @@ public class Escalonador{
 			// se não ele olha somente se há novos processos
 			if(tempo_corrente == 0){
 				processoCorrente = buscarProcesso(clone, filaEspera, "", tempo_corrente, true);
-			
 				String [] aux = processoCorrente.split(VIRGULA);
 				String montagem = aux[0] + "," + aux[1] + "," + aux[2] + "," + aux[3] + "," + Integer.toString(tempo_corrente) + ",?," + Integer.toString(Integer.parseInt(aux[6]) - 1);
 				filaSJFP.add(montagem);
@@ -215,9 +206,8 @@ public class Escalonador{
 			} else {
 				// false significa que não terminou
 				processoCorrente = buscarProcesso(clone, filaEspera, filaSJFP.get(posicao-1), tempo_corrente, false);
-
 				if(processoCorrente != filaSJFP.get(posicao-1)){
-					// atualiza o tempo que falta para executar do processo na string ou só no cont? se for no cont tem que mandar pro buscarProcesso
+					// atualiza o tempo que falta para executar do processo na string 
 					// adiciona o processo na fila de espera
 					// adiciona o novo processo na fila
 					// cont = 1
@@ -231,7 +221,6 @@ public class Escalonador{
 					filaSJFP.add(montagem);
 					posicao++;
 					cont = 0;
-					
 				} else {
 					cont++;
 				}
@@ -256,17 +245,13 @@ public class Escalonador{
 		}
 	}
 
-	//ajeitar aqui
 	public  void sjf(String opcao){
 		this.filaSJF = cloneComAlteracoes();
-		// Levar em consideração o tempo de chegada e o burst time
-		// DEIXAR ISSO AQUI MAIS BONITINHO e realmente testar se não vai ter conflito nessas duas condições do tempo de chegada com o burst time
 		for(int i = 0; i < this.filaSJF.size(); i++){
 			for(int j = 0; j <i; j++){
 				if(Float.parseFloat(this.filaSJF.get(i).split(VIRGULA)[0]) <= Float.parseFloat(this.filaSJF.get(j).split(VIRGULA)[0])){
 					if(Float.parseFloat(this.filaSJF.get(i).split(VIRGULA)[2]) <= Float.parseFloat(this.filaSJF.get(j).split(VIRGULA)[2])){
 						String aux = this.filaSJF.get(j);
-						//TODO: Ajeitar os tempos de chegada e finalizacao
 						this.filaSJF.set(j, this.filaSJF.get(i));
 						this.filaSJF.set(i, aux);
 					}
@@ -305,11 +290,8 @@ public class Escalonador{
 
 	public  void rr(String opcao){
 		int quantum = 3, time = 0, nproc;
-
 		float total_time, context = 0;
-
 		ArrayList<String> ganttRR = new ArrayList(); //<ID> <tempo_ini> <tempo_fim>
-
 		nproc = this.processos.size();
 
 		int[] rburst = new int[nproc];	//vai contabilizar o burst restante de cada processo
@@ -432,19 +414,15 @@ public class Escalonador{
 			System.out.println( "i. Número de processos executados = " + nproc);
 			System.out.println();
 
-		}
-		else if(opcao == "2"){			
+		} else if(opcao == "2"){			
 			for (int i = 0; i < nproc ; i++){ //não sei se precisa do "this" antes de pegar o size do array
 				System.out.println( "a. ID do processo = " + this.processos.get(i).split(VIRGULA)[1]);				
 				System.out.println( "b. Tempo de processamento = " + this.processos.get(i).split(VIRGULA)[2]);
 				System.out.println();
 			}
-
-		}
-		else{
+		} else{
 			System.out.println("Opção inválida!");
 		}
-
 	}
 
 	public void priority(String opcao){
@@ -465,31 +443,16 @@ public class Escalonador{
 		} else {
 			System.out.println("Opção inválida!");
 		}
-
 	}
 
 	public static void main(String[] args) throws Exception{
 		Escalonador escalonador = new Escalonador();  
-		//escalonador.lerArquivo("dados-1.csv");
-        //String[] dado
-        //System.out.println("Tempo Chegada: " + dados[0] + "| id: " + dados[1] + " | burst time: " + dados[2] + " | prioridade: " + dados[3] + "\n");
-    	//System.out.println(escalonador.sumCpuBurst());
-    	//ArrayList<String> teste = escalonador.cloneComAlteracoes();
-    	
-		//escalonador.ordenarFila(escalonador.processos, 2);
-    	//escalonador.sjfpPreemptivo(true);
-    	//escalonador.imprimir();
-  //   	for(int i = 0; i < escalonador.filaSJFP.size(); i++){
-		// 	System.out.println(escalonador.filaSJFP.get(i));
-		// }
-
-		//TODO: O erro talvez é que n to começando com nenhum processo e/ou não verifico se a fila está vazia
-
 		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
-		escalonador.imprimir();
-    	escalonador.fcfs("1");
-    	escalonador.rr("1");
+		
+		
+		///////////////////////////////////// CONSOLE
+		
 		// System.out.println("Digite o nome do arquivo desejado: ");
 		// String dados = reader.next();
 		
