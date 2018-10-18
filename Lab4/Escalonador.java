@@ -108,6 +108,22 @@ public class Escalonador{
 		return this.processos.size();
 	}
 
+    static void bubbleSort(ArrayList<String> arr){
+        int n = arr.size();
+        String temp;
+        for(int i=0; i < n; i++){
+            for(int j=1; j < (n-i); j++){
+        		if(Integer.parseInt(arr.get(j).split(VIRGULA)[0]) < Integer.parseInt(arr.get(j-1).split(VIRGULA)[0]) ){ ///Integer.parseInt(this.processos.get(i).split(VIRGULA)[0])
+	                //swap elements
+	                temp = arr.get(j-1);
+	                arr.set(j-1, arr.get(j));
+	                arr.set(j, temp);
+            	}	
+            }
+	    }
+
+    }
+
 	// Se o processo tiver finalizado:
 		// 1º Olha se a fila de espera está vazia
 		// Se não estiver:  1.a. Olha se chegou nesse instante processos com cpu burst menor do que a cabeça da fila de espera. 
@@ -361,7 +377,7 @@ public class Escalonador{
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
 			System.out.println( "b. Tempo total de processamento = " + (total_time));
 			System.out.println( "c. Percentual de utilização da CPU  = " + ((total_time)/(total_time+context))); // não sei como calcular o tempo de troca de contexto
-			System.out.println( "d. Média troughput dos processos = " + nproc/total_time );
+			System.out.println( "d. Média troughput dos processos = " + nproc/(total_time+context) );
 			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
 			System.out.println( "g. Média tempo de Resposta dos processos = " +  (float) IntStream.of(resp).sum()/nproc ); // não sei como calcular o tempo de respostaa
@@ -382,13 +398,50 @@ public class Escalonador{
 	}
 
 	public void fcfs(String opcao){
+		int time = 0, nproc;
+		float total_time = 0, context = 0;
 
+		nproc = this.processos.size();
+		context = nproc -1;
+
+		int[] start = new int[nproc];
+		int[] fin   = new int[nproc];
+		int[] wait  = new int[nproc];
+		int[] turnA = new int[nproc];
+
+		bubbleSort(this.processos);
+
+		for (int i = 0; i < nproc ; i++){
+			wait[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
+			start[i] = time;
+			time = time + Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]);
+			wait[i] = start[i] - wait[i];
+			fin[i] = time;
+			turnA[i] = fin[i] - start[i];	
+		}		
 
 		if(opcao == "1"){
+			System.out.println( "a. Algoritmo FCFS.");
+			System.out.println( "b. Tempo total de processamento = " + (time));
+			System.out.println( "c. Percentual de utilização da CPU  = " + ((time)/(time + context))); // não sei como calcular o tempo de troca de contexto
+			System.out.println( "d. Média troughput dos processos = " + nproc/(time+context) );
+			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
+			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
+			System.out.println( "g. Média tempo de Resposta dos processos = " +  (float) IntStream.of(wait).sum()/nproc ); // não sei como calcular o tempo de respostaa
+			System.out.println( "h. Média de troca de contextos = " + (float) context/nproc); 
+			System.out.println( "i. Número de processos executados = " + nproc);
+			System.out.println();
 
-		} else if(opcao == "2"){
+		}
+		else if(opcao == "2"){			
+			for (int i = 0; i < nproc ; i++){ //não sei se precisa do "this" antes de pegar o size do array
+				System.out.println( "a. ID do processo = " + this.processos.get(i).split(VIRGULA)[1]);				
+				System.out.println( "b. Tempo de processamento = " + this.processos.get(i).split(VIRGULA)[2]);
+				System.out.println();
+			}
 
-		} else {
+		}
+		else{
 			System.out.println("Opção inválida!");
 		}
 
@@ -435,6 +488,7 @@ public class Escalonador{
 		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
 		escalonador.imprimir();
+    	escalonador.fcfs("1");
     	escalonador.rr("1");
 		// System.out.println("Digite o nome do arquivo desejado: ");
 		// String dados = reader.next();
