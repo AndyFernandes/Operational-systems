@@ -19,6 +19,10 @@ public class Escalonador{
 	ArrayList<String> filaSJF;
 	ArrayList<String> filaSJFP;
 
+	ArrayList<String> estatisticas = new ArrayList<String>();
+	ArrayList<String> diagrama = new ArrayList<String>();
+
+
 	Escalonador(){
 		processos = new ArrayList();
 	}
@@ -425,21 +429,228 @@ public class Escalonador{
 		}
 	}
 
+	public ArrayList<String> adicionarCampoString(){
+		ArrayList<String> processos = new ArrayList<>();
+		int limite = this.processos.size();
+		for(int i = 0; i < limite; i++){
+			processos.add(this.processos.get(i) + ",0,0,0,0");
+		}
+
+		return processos;
+	}
+
+	public double somatorio(ArrayList<String> listaProcessos, int pos){
+		int sum = 0;
+		for(int i = 0; i < listaProcessos.size(); i++){
+			sum += Integer.parseInt(listaProcessos.get(i).split(VIRGULA)[pos]);
+		}
+		return sum;
+	}
+
+	public double calcularMedia(ArrayList<String> listaProcessos, int pos){
+		return somatorio(listaProcessos, pos)/(double)listaProcessos.size();
+	}
+
+	public void calcularEstaticica(String nomeAlg, ArrayList<String> listaProcessosExecutados){
+		this.estatisticas.add(nomeAlg);
+		this.estatisticas.add(Double.toString(somatorio(this.processos, 2)));
+		this.estatisticas.add("tempo total-tempo troca contexto)/tempo total");
+		this.estatisticas.add("Media Throughput dos processos");
+		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 4)));
+		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 5)));
+		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 6)));
+		this.estatisticas.add(Double.toString((double)this.diagrama.size() /(double)this.processos.size() ));
+		this.estatisticas.add(Integer.toString(this.processos.size()));
+	}
+
+	public String construirString(String[] processo){
+
+		String dadosProcesso = "";
+		for (int k = 0; k < 8; k++){
+			if (k < 7) {
+				dadosProcesso += processo[k] + ",";
+			}else {
+				dadosProcesso += processo[k];
+			}
+		}
+		return  dadosProcesso;
+
+	}
+
+	public int processoMenosPrioridade(int limite, int prioridade, ArrayList<String> processos){
+		int pos = -1, tempo = 1000;
+		for (int i = 0; i < processos.size(); i++) {
+			String[] dados = processos.get(i).split(",");
+			if (limite > Integer.parseInt(dados[0])) {
+				if (prioridade > Integer.parseInt(dados[3])) {
+					if(tempo >= Integer.parseInt(dados[0])){
+						tempo = Integer.parseInt(dados[0]);
+						pos = i;
+					}
+				}
+			}
+		}
+		return pos;
+	}
+
+	public String[] atualizarInfoProcessoFinalizado(String[] processo, int tempoInicio){
+		int tempoChegadaP = Integer.parseInt(processo[0]);
+		processo[4] = Integer.toString(Integer.parseInt(processo[4])+ (tempoInicio - tempoChegadaP) + Integer.parseInt(processo[2]));
+		processo[5] = Integer.toString(Integer.parseInt(processo[5]) + tempoInicio - tempoChegadaP);
+		if(Integer.parseInt(processo[7]) == 0) {
+			processo[6] = Integer.toString(tempoInicio - tempoChegadaP);
+			processo[7] = "0";
+		}
+
+		return processo;
+
+	}
+
+	public String[] atualizarInfoProcessoFila(String[] processo, String[] processo2, int tempoInicio){
+
+		int tempoChegadaP = Integer.parseInt(processo[0]);
+		processo[4] = Integer.toString(Integer.parseInt(processo[4]) + (tempoInicio - tempoChegadaP)
+				+ (Integer.parseInt(processo2[0]) - tempoInicio));
+		processo[2] = Integer.toString(Integer.parseInt(processo[2]) - (Integer.parseInt(processo2[0]) - tempoInicio));
+		processo[5] = Integer.toString(Integer.parseInt(processo[5]) + tempoInicio - tempoChegadaP);
+		if(Integer.parseInt(processo[7]) == 0) {
+			processo[6] = Integer.toString(tempoInicio - tempoChegadaP);
+			processo[7] = "1";
+		}
+		processo[0] = processo2[0];
+
+		return processo;
+	}
+
 	public void priority(String opcao){
-		if(opcao == "1"){
+		int prioridade = 1000;
+		int pos = 0, tempoUltimoProcesso = 0, tempoChegadaP = 0, existeProcesso = 0;
 
-		} else if(opcao == "2"){
+		ArrayList<String> execucao = new ArrayList<>();
 
-		} else {
+		ArrayList<String> processos = adicionarCampoString();
+
+		while(processos.size() > 0) {
+
+			for (int i = 0; i < processos.size(); i++) {
+				String[] dados = processos.get(i).split(",");
+				if (prioridade > Integer.parseInt(dados[3])) {
+					if (tempoUltimoProcesso >= Integer.parseInt(dados[0])) {
+						pos = i;
+						prioridade = Integer.parseInt(dados[3]);
+						existeProcesso = 1;
+					}
+				}
+			}
+
+			if(existeProcesso == 1) {
+				String[] processo = processos.get(pos).split(",");
+				tempoChegadaP = Integer.parseInt(processo[0]);
+				processo[4] = Integer.toString((tempoUltimoProcesso - tempoChegadaP) + Integer.parseInt(processo[2]));
+				processo[5] = Integer.toString(tempoUltimoProcesso - tempoChegadaP);
+				processo[6] = Integer.toString(tempoUltimoProcesso - tempoChegadaP);
+
+				String dadosP = construirString(processo);
+				execucao.add(dadosP);
+
+				String execucaoAtual = processo[1] + "," + tempoUltimoProcesso + ",";
+				tempoUltimoProcesso = tempoUltimoProcesso + Integer.parseInt(processo[2]);
+				execucaoAtual = execucaoAtual + tempoUltimoProcesso;
+
+				this.diagrama.add(execucaoAtual);
+				processos.remove(pos);
+
+			}else{
+				tempoUltimoProcesso ++;
+			}
+			pos = 0;
+			prioridade = 1000;
+			existeProcesso = 0;
+
+		}
+
+		if(opcao == "1") {
+			calcularEstaticica("Prioridade Não Preemptivo", execucao);
+			System.out.println(estatisticas);
+		}else if(opcao == "2"){
+			System.out.println(diagrama);
+			System.out.println(estatisticas);
+		}else {
 			System.out.println("Opção inválida!");
 		}
 	}
 
+
 	public void priorityP(String opcao){
+
+		int prioridade = 1000;
+		int pos = 0, tempoUltimoProcesso = 0;
+		int existeP = 0;
+		ArrayList<String> execucao = new ArrayList<>();
+
+		ArrayList<String> processos = adicionarCampoString();
+
+		while(processos.size() > 0) {
+			for (int i = 0; i < processos.size(); i++) {
+				String[] dados = processos.get(i).split(",");
+				if (tempoUltimoProcesso >= Integer.parseInt(dados[0]) ) {
+					if (prioridade > Integer.parseInt(dados[3])) {
+						pos = i;
+						prioridade = Integer.parseInt(dados[3]);
+						existeP = 1;
+					}
+				}
+
+			}
+			if(existeP == 1){
+				String[] processo = processos.get(pos).split(",");
+
+				int verificacao = processoMenosPrioridade(Integer.parseInt(processo[2])+ tempoUltimoProcesso, Integer.parseInt(processo[3]), processos);
+				if(verificacao != -1){
+					String[] processo3 = processos.get(verificacao).split(",");
+
+					String[] dadosProcessados = atualizarInfoProcessoFila(processo, processo3, tempoUltimoProcesso);
+
+					String dadosP = construirString(dadosProcessados);
+
+					String execucaoAtual = processo[1] + "," + tempoUltimoProcesso + ",";
+
+					tempoUltimoProcesso = tempoUltimoProcesso + Math.abs(tempoUltimoProcesso - Integer.parseInt(processo3[0]));
+					processos.remove(pos);
+					processos.add(dadosP);
+
+					execucaoAtual = execucaoAtual+tempoUltimoProcesso;
+					this.diagrama.add(execucaoAtual);
+
+				}else{
+					String[] dadosProcesso = atualizarInfoProcessoFinalizado(processo, tempoUltimoProcesso);
+
+					String dadosP = construirString(dadosProcesso);
+
+					String execucaoAtual = processo[1] + "," + tempoUltimoProcesso + ",";
+
+					tempoUltimoProcesso = tempoUltimoProcesso + Integer.parseInt(dadosProcesso[2]);
+					execucao.add(dadosP);
+					processos.remove(pos);
+					execucaoAtual = execucaoAtual + tempoUltimoProcesso;
+
+					this.diagrama.add(execucaoAtual);
+
+				}
+
+			}else{
+				tempoUltimoProcesso++;
+			}
+
+			pos = 0;
+			prioridade = 1000;
+			existeP = 0;
+		}
 		if(opcao == "1"){
-
+			calcularEstaticica("Prioridade Preemptivo", execucao);
+			System.out.println(estatisticas);
 		} else if(opcao == "2"){
-
+			System.out.println(diagrama);
 		} else {
 			System.out.println("Opção inválida!");
 		}
