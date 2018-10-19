@@ -547,7 +547,7 @@ public class Escalonador{
 		return somatorio(listaProcessos, pos)/(double)listaProcessos.size();
 	}
 
-	public void calcularEstaticica(String nomeAlg, ArrayList<String> listaProcessosExecutados){
+	public void calcularEstatistica(String nomeAlg, ArrayList<String> listaProcessosExecutados){
 		double tempoCPUburst = somatorio(this.processos, 2);
 		double tempoTrocaContexto = (double)(this.diagrama.size()-1.0); 
 		double mediaThoughput = this.processos.size() / (double)(tempoCPUburst + tempoTrocaContexto);
@@ -564,7 +564,7 @@ public class Escalonador{
 		System.out.println("i. Número de processos executados = " + this.processos.size());
 	}
 
-    public void exibirDiagrma(ArrayList<String> diagrama){
+    public void exibirDiagrama(ArrayList<String> diagrama){
         String[] processo;
         int tempoProcessamento;
         for (int i = 0; i < diagrama.size(); i++){
@@ -574,13 +574,6 @@ public class Escalonador{
         }
     }
 
-	public void exibirDiagrma(ArrayList<String> diagrama){
-		String[] processo;
-		for (int i = 0; i < diagrama.size; i++){
-			processo = diagrama.get(i).split(","); 
-			System.out.println("a. ID processo = "+ processado[0])
-		}
-	}
 
 	public String construirString(String[] processo){
 
@@ -649,7 +642,7 @@ public class Escalonador{
 
 		ArrayList<String> processos = adicionarCampoString();
 
-        estatisticas.clear();
+		estatisticas.clear();
         diagrama.clear();
 
 		while(processos.size() > 0) {
@@ -692,11 +685,9 @@ public class Escalonador{
 		}
 
 		if(opcao == "1") {
-			calcularEstaticica("Prioridade Não Preemptivo", execucao);
-			System.out.println(estatisticas);
+			calcularEstatistica("Prioridade Preemptivo", execucao);
 		}else if(opcao == "2"){
-			System.out.println(diagrama);
-			System.out.println(estatisticas);
+			exibirDiagrama(diagrama);
 		}else {
 			System.out.println("Opção inválida!");
 		}
@@ -772,10 +763,9 @@ public class Escalonador{
 			existeP = 0;
 		}
 		if(opcao == "1"){
-			calcularEstaticica("Prioridade Preemptivo", execucao);
-			System.out.println(estatisticas);
+			calcularEstatistica("Prioridade Preemptivo", execucao);
 		} else if(opcao == "2"){
-			System.out.println(diagrama);
+			exibirDiagrama(diagrama);
 		} else {
 			System.out.println("Opção inválida!");
 		}
