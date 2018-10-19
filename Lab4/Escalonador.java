@@ -564,6 +564,16 @@ public class Escalonador{
 		System.out.println("i. Número de processos executados = " + this.processos.size());
 	}
 
+    public void exibirDiagrma(ArrayList<String> diagrama){
+        String[] processo;
+        int tempoProcessamento;
+        for (int i = 0; i < diagrama.size(); i++){
+            processo = diagrama.get(i).split(",");
+            tempoProcessamento = Integer.parseInt(processo[2]) -  Integer.parseInt(processo[1]);
+            System.out.println("ID: "+ processo[0] + "| Tempo processado: " + tempoProcessamento );
+        }
+    }
+
 	public void exibirDiagrma(ArrayList<String> diagrama){
 		String[] processo;
 		for (int i = 0; i < diagrama.size; i++){
@@ -639,6 +649,9 @@ public class Escalonador{
 
 		ArrayList<String> processos = adicionarCampoString();
 
+        estatisticas.clear();
+        diagrama.clear();
+
 		while(processos.size() > 0) {
 
 			for (int i = 0; i < processos.size(); i++) {
@@ -698,6 +711,9 @@ public class Escalonador{
 		ArrayList<String> execucao = new ArrayList<>();
 
 		ArrayList<String> processos = adicionarCampoString();
+
+        estatisticas.clear();
+        diagrama.clear();
 
 		while(processos.size() > 0) {
 			for (int i = 0; i < processos.size(); i++) {
