@@ -504,15 +504,20 @@ public class Escalonador{
 	}
 
 	public void calcularEstaticica(String nomeAlg, ArrayList<String> listaProcessosExecutados){
-		this.estatisticas.add(nomeAlg);
-		this.estatisticas.add(Double.toString(somatorio(this.processos, 2)));
-		this.estatisticas.add("tempo total-tempo troca contexto)/tempo total");
-		this.estatisticas.add("Media Throughput dos processos");
-		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 4)));
-		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 5)));
-		this.estatisticas.add(Double.toString(calcularMedia(listaProcessosExecutados, 6)));
-		this.estatisticas.add(Double.toString((double)this.diagrama.size() /(double)this.processos.size() ));
-		this.estatisticas.add(Integer.toString(this.processos.size()));
+		double tempoCPUburst = somatorio(this.processos, 2);
+		double tempoTrocaContexto = (double)(this.diagrama.size()-1.0); 
+		double mediaThoughput = this.processos.size() / (double)(tempoCPUburst + tempoTrocaContexto);
+		double tempoProcessamento = tempoCPUburst + tempoTrocaContexto;
+		double percentualUsoCpu = (tempoProcessamento - tempoTrocaContexto)/(double)tempoProcessamento;
+		this.estatisticas.add("a. Algoritmo " + nomeAlg);
+		this.estatisticas.add("b. Tempo total de processamento = " + tempoProcessamento);
+		this.estatisticas.add("c. Percentual de utilização da CPU  = " + percentualUsoCpu);
+		this.estatisticas.add("d. Média troughput dos processos = " + mediaThoughput);
+		this.estatisticas.add("e. Média turnaround dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 4)));
+		this.estatisticas.add("f. Média tempo de espera = " + Double.toString(calcularMedia(listaProcessosExecutados, 5)));
+		this.estatisticas.add("g. Média tempo de Resposta dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 6)));
+		this.estatisticas.add("h. Média de troca de contextos = " + (this.diagrama.size() - 1.0)/(double)this.processos.size());
+		this.estatisticas.add("i. Número de processos executados = " + this.processos.size());
 	}
 
 	public String construirString(String[] processo){
