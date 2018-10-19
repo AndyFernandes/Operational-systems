@@ -405,7 +405,7 @@ public class Escalonador{
 		
 		for (int i = 0; i < nproc ; i++){
 			rburst[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]) ; //tamanho de burt inicial
-			turnA[i] = 0;
+			turnA[i] = Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
 			wait[i] = 0;
 			touch[i] = false;
 		}
@@ -417,8 +417,7 @@ public class Escalonador{
 				if (rburst[i] == 0 || Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]) > time)
 					continue;
 				else if (rburst[i] >= quantum ){
-					if (touch[i] == false){
-						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+					if (touch[i] == false){						
 						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
 						resp[i] = wait[i];
 						touch[i] = true;
@@ -436,8 +435,7 @@ public class Escalonador{
 					if (rburst[i] == 0) turnA[i] = time - turnA[i];	// se o processo tiver acabado, calcula o turnaround
 				}
 				else{
-					if (touch[i] == false){
-						turnA[i] = time; // salva o tempo do primeiro processamento de um processo
+					if (touch[i] == false){						
 						wait[i] = time - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);
 						resp[i] = wait[i];
 						touch[i] = true;
