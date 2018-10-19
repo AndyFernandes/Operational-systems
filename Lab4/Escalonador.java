@@ -89,54 +89,92 @@ public class Escalonador{
 		return this.processos.size()/this.tempoTotal(fila);
 	}
 
+	public void ordenarFila2(ArrayList<String> fila){
+		for(int i = 0; i < fila.size(); i++){
+			for(int j = 0; j <fila.size(); j++){
+				if(Float.parseFloat(fila.get(i).split(VIRGULA)[1]) <= Float.parseFloat(fila.get(j).split(VIRGULA)[1])){
+					if(Float.parseFloat(fila.get(i).split(VIRGULA)[4]) <= Float.parseFloat(fila.get(j).split(VIRGULA)[4])){
+						String aux = fila.get(j);
+						fila.set(j, fila.get(i));
+						fila.set(i, aux);
+					}
+				}
+			}
+		}
+	}
+
 	public float mediaTempoEspera(ArrayList<String> fila){
 		//devo levar em consideração quando o processo chegou e quando ele subiu pra executar a primeira vez
 		ArrayList<String> id = new ArrayList();
 		ArrayList<String> tempoProcs = new ArrayList();
 
-		// Olha assim:
+		ArrayList<String> copy = new ArrayList();
 		for(int i = 0; i < fila.size(); i++){
-			String aux[] = fila.get(i).split(VIRGULA);
-			if(i == 0){
+			copy.add(fila.get(i));
+		}
+		ordenarFila2(copy);
+		// é o seguinte: eu calculo o tempo de resposta pra todos e no final eu só somo aqueles iguais
+		// 1. eu deixo ordenado pelo ID
+		// 2. eu faço a lógica tipo de se não estiver contido msm coisa
+		// 3. se estiver contido, pelo aux[1] eu pego o id  dele e atualizo a 2a posicao
+		// 4. só que eu vou adicionar mais um campo na string, da posicao do ultimo tempo de fim
+		// 5. ai nesse else eu comparo o tempo de fim - tempo de inicio
+		for(int i = 0; i < copy.size(); i++){
+			String aux[] = copy.get(i).split(VIRGULA);
+			if(!id.contains(aux[1])){
 				id.add(aux[1]);
 				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
-				String montagem = aux[1] + "," + Integer.toString(resposta);
-				tempoProcs.add(montagem);
-
-			} else if(!id.contains(aux[1])){
-				id.add(aux[1]);
-				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
-				String montagem = aux[1] + "," + Integer.toString(resposta);
+				String montagem = aux[1] + "," + Integer.toString(resposta) + "," + aux[5];
 				tempoProcs.add(montagem);
 			} else {
-				// vou pegar pelo id como posicao so preciso ordenar
-				aux[] = tempoProcs.get(Integer.parseInt(aux[1]));
+				int posit1 = Integer.parseInt(aux[1])-1;
+				// pegando o tempo procs e reparte (vai ter a informação da espera anterior(posicao1) e tempo final do anterior(posicao2))
+				String tempo[] = tempoProcs.get(posit1).split(VIRGULA);
+				// pega o copy e reparte (vai ter  ainformacao do tempo inicial do outro processo (posicao4))
+				String copia[] = copy.get(i).split(VIRGULA);
+				int resposta = Integer.parseInt(copia[1]) + (Integer.parseInt(copia[4]) - Integer.parseInt(tempo[2]));
+				String montagem = tempo[1] + "," + Integer.toString(resposta) + "," + copia[5];
+				tempoProcs.set(posit1, montagem);
 			}
 		}
-		return 0;
+
+		float sum = 0;
+		for(int i=0; i < tempoProcs.size(); i++){
+			sum += Float.parseFloat(tempoProcs.get(i).split(VIRGULA)[1]);
+		}
+		return sum/tempoProcs.size();
 	}
 
 	public float mediaTurnAround(ArrayList<String> fila){
-		// soma do cpu burst do processo + espera
-		return 0;
-	}
-
-	public float mediaTempoResposta(ArrayList<String> fila){
-		// devo levar em consideração a primeira vez que o processo executou e quando ele chegou.
-		// o que eu preciso fazer: achar as primeiras ocorrencias 
 		ArrayList<String> id = new ArrayList();
 		ArrayList<String> tempoProcs = new ArrayList();
 
-		// Olha assim:
 		for(int i = 0; i < fila.size(); i++){
 			String aux[] = fila.get(i).split(VIRGULA);
-			if(i == 0){
+			if(id.contains(aux[1])){
+				tempoProcs.set((Integer.parseInt(aux[1])-1), fila.get(i));
+			} else {
 				id.add(aux[1]);
-				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
-				String montagem = aux[1] + "," + Integer.toString(resposta);
-				tempoProcs.add(montagem);
+				tempoProcs.add(fila.get(i));
+			}
+		}
+		
+		float sum = 0;
+		for(int i = 0; i < tempoProcs.size(); i++){
+			int time = Integer.parseInt(tempoProcs.get(i).split(VIRGULA)[5]) - Integer.parseInt(tempoProcs.get(i).split(VIRGULA)[0]);
+			sum += time;
+		}
 
-			} else if(!id.contains(aux[1])){
+		return sum/tempoProcs.size();
+	}
+
+	public float mediaTempoResposta(ArrayList<String> fila){
+		ArrayList<String> id = new ArrayList();
+		ArrayList<String> tempoProcs = new ArrayList();
+
+		for(int i = 0; i < fila.size(); i++){
+			String aux[] = fila.get(i).split(VIRGULA);
+			if(!id.contains(aux[1])){
 				id.add(aux[1]);
 				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
 				String montagem = aux[1] + "," + Integer.toString(resposta);
@@ -220,6 +258,14 @@ public class Escalonador{
 		}
 	}
 
+	public void imprimirBonito(ArrayList<String> fila){
+		for(int i=0; i < fila.size(); i++ ){
+			String []aux = fila.get(i).split(VIRGULA);
+			int processado = Integer.parseInt(aux[5]) - Integer.parseInt(aux[4]);
+			System.out.println("ID: " + aux[1] + "| Tempo processado: " + processado);
+		}
+	}
+
 	public void sjfp(String opcao){
 		this.filaSJFP = new ArrayList();
 		ArrayList<String> filaEspera = new ArrayList();
@@ -286,16 +332,16 @@ public class Escalonador{
 
 		if(opcao == "1"){
 			System.out.println("a. Algoritmo: SJF Preemptivo");
-			System.out.println("b. Tempo total de processamento: " + this.sumCpuBurst());
-			System.out.println("c. Percentual de utilização da CPU: ");
-			System.out.println("d. Média Throughput dos processos: ");
-			System.out.println("e. Média Turnaround dos processos: ");
-			System.out.println("f. Média Tempo de Espera dos processos: ");
-			System.out.println("g. Média de Tempo de Resposta dos processos: ");
+			System.out.println("b. Tempo total de processamento: " + (this.sumCpuBurst() + filaSJFP.size()-1));
+			System.out.println("c. Percentual de utilização da CPU: " + this.percentualUsoCpu(filaSJFP));
+			System.out.println("d. Média Throughput dos processos: " + this.mediaThoughput(filaSJFP));
+			System.out.println("e. Média Turnaround dos processos: " + this.mediaTurnAround(filaSJFP));
+			System.out.println("f. Média Tempo de Espera dos processos: " + this.mediaTempoEspera(filaSJFP));
+			System.out.println("g. Média de Tempo de Resposta dos processos: " + this.mediaTempoResposta(filaSJFP));
 			System.out.println("h. Média de troca de contextos: " + this.mediaTrocaContexto(filaSJFP));
 			System.out.println("i. Número de processos executados: " + this.processos.size());
 		} else if(opcao == "2"){
-
+			this.imprimirBonito(filaSJFP);
 		} else {
 			System.out.println("Opção inválida!");
 		}
@@ -328,17 +374,17 @@ public class Escalonador{
 		}
 
 		if(opcao == "1"){
-			System.out.println("a. Algoritmo: SJF não preemptivo");
-			System.out.println("b. Tempo total de processamento: " + this.sumCpuBurst());
-			System.out.println("c. Percentual de utilização da CPU: ");
-			System.out.println("d. Média Throughput dos processos: ");
-			System.out.println("e. Média Turnaround dos processos: ");
-			System.out.println("f. Média Tempo de Espera dos processos: ");
-			System.out.println("g. Média de Tempo de Resposta dos processos: ");
-			System.out.println("h. Média de troca de contextos: ");
+			System.out.println("a. Algoritmo: SJF Não-Preemptivo");
+			System.out.println("b. Tempo total de processamento: " + (this.sumCpuBurst() + filaSJF.size()-1));
+			System.out.println("c. Percentual de utilização da CPU: " + this.percentualUsoCpu(filaSJF));
+			System.out.println("d. Média Throughput dos processos: " + this.mediaThoughput(filaSJF));
+			System.out.println("e. Média Turnaround dos processos: " + this.mediaTurnAround(filaSJF));
+			System.out.println("f. Média Tempo de Espera dos processos: " + this.mediaTempoEspera(filaSJF));
+			System.out.println("g. Média de Tempo de Resposta dos processos: " + this.mediaTempoResposta(filaSJF));
+			System.out.println("h. Média de troca de contextos: " + this.mediaTrocaContexto(filaSJF));
 			System.out.println("i. Número de processos executados: " + this.processos.size());
 		} else if(opcao == "2"){
-
+			imprimirBonito(filaSJF);
 		} else {
 			System.out.println("Opção inválida!");
 		}
@@ -717,9 +763,8 @@ public class Escalonador{
 		Escalonador escalonador = new Escalonador();  
 		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
-		escalonador.sjfp("1");
-		escalonador.imprimir(escalonador.filaSJFP);
-		escalonador.mediaTempoResposta(escalonador.filaSJFP);
+		escalonador.sjf("1");
+		escalonador.sjf("2");
 		
 		///////////////////////////////////// CONSOLE
 		
