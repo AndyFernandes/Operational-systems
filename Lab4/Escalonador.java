@@ -74,19 +74,45 @@ public class Escalonador{
 		return clone;
 	}
 
+	public float tempoTotal(ArrayList<String> fila){
+		// total cpu burst + troca de contexto
+		return this.sumCpuBurst() + (fila.size()-1);
+	}
 	// <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
 	public float percentualUsoCpu(ArrayList<String> fila){
-		// total-tempo troca contexto / tempo total
-		return (fila.size()-1)/this.sumCpuBurst();
+		// tempo total-tempo troca contexto / tempo total
+		return (this.tempoTotal(fila)-(fila.size()-1))/this.tempoTotal(fila);
 	}
 
 	public float mediaThoughput(ArrayList<String> fila){
-		return this.processos.size()/this.sumCpuBurst();
+		// numero de processos / tempo total
+		return this.processos.size()/this.tempoTotal(fila);
 	}
 
 	public float mediaTempoEspera(ArrayList<String> fila){
 		//devo levar em consideração quando o processo chegou e quando ele subiu pra executar a primeira vez
-		
+		ArrayList<String> id = new ArrayList();
+		ArrayList<String> tempoProcs = new ArrayList();
+
+		// Olha assim:
+		for(int i = 0; i < fila.size(); i++){
+			String aux[] = fila.get(i).split(VIRGULA);
+			if(i == 0){
+				id.add(aux[1]);
+				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
+				String montagem = aux[1] + "," + Integer.toString(resposta);
+				tempoProcs.add(montagem);
+
+			} else if(!id.contains(aux[1])){
+				id.add(aux[1]);
+				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
+				String montagem = aux[1] + "," + Integer.toString(resposta);
+				tempoProcs.add(montagem);
+			} else {
+				// vou pegar pelo id como posicao so preciso ordenar
+				aux[] = tempoProcs.get(Integer.parseInt(aux[1]));
+			}
+		}
 		return 0;
 	}
 
@@ -104,17 +130,26 @@ public class Escalonador{
 		// Olha assim:
 		for(int i = 0; i < fila.size(); i++){
 			String aux[] = fila.get(i).split(VIRGULA);
-			System.out.println(aux[1]);
 			if(i == 0){
 				id.add(aux[1]);
+				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
+				String montagem = aux[1] + "," + Integer.toString(resposta);
+				tempoProcs.add(montagem);
 
 			} else if(!id.contains(aux[1])){
 				id.add(aux[1]);
 				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
-				System.out.println("ID: "+ aux[1] + " | tempo resposta: " + resposta);
+				String montagem = aux[1] + "," + Integer.toString(resposta);
+				tempoProcs.add(montagem);
 			}
 		}
-		return 0;
+		
+		float sum = 0;
+		for(int i = 0; i < tempoProcs.size(); i++){
+			sum += Float.parseFloat(tempoProcs.get(i).split(VIRGULA)[1]);
+		}
+
+		return sum/tempoProcs.size();
 	}
 
 	public float mediaTrocaContexto(ArrayList<String> fila){
@@ -679,7 +714,7 @@ public class Escalonador{
 		escalonador.lerArquivo("dados.csv");
 		escalonador.sjfp("1");
 		escalonador.imprimir(escalonador.filaSJFP);
-
+		escalonador.mediaTempoResposta(escalonador.filaSJFP);
 		
 		///////////////////////////////////// CONSOLE
 		
