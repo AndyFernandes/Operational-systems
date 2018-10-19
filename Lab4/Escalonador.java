@@ -77,16 +77,16 @@ public class Escalonador{
 	// <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
 	public float percentualUsoCpu(ArrayList<String> fila){
 		// total-tempo troca contexto / tempo total
-		return fila.size()/this.sumCpuBurst();
+		return (fila.size()-1)/this.sumCpuBurst();
 	}
 
 	public float mediaThoughput(ArrayList<String> fila){
-
-		return 0;
+		return this.processos.size()/this.sumCpuBurst();
 	}
 
 	public float mediaTempoEspera(ArrayList<String> fila){
 		//devo levar em consideração quando o processo chegou e quando ele subiu pra executar a primeira vez
+		
 		return 0;
 	}
 
@@ -97,12 +97,29 @@ public class Escalonador{
 
 	public float mediaTempoResposta(ArrayList<String> fila){
 		// devo levar em consideração a primeira vez que o processo executou e quando ele chegou.
+		// o que eu preciso fazer: achar as primeiras ocorrencias 
+		ArrayList<String> id = new ArrayList();
+		ArrayList<String> tempoProcs = new ArrayList();
+
+		// Olha assim:
+		for(int i = 0; i < fila.size(); i++){
+			String aux[] = fila.get(i).split(VIRGULA);
+			System.out.println(aux[1]);
+			if(i == 0){
+				id.add(aux[1]);
+
+			} else if(!id.contains(aux[1])){
+				id.add(aux[1]);
+				int resposta = Integer.parseInt(aux[4]) - Integer.parseInt(aux[0]);
+				System.out.println("ID: "+ aux[1] + " | tempo resposta: " + resposta);
+			}
+		}
 		return 0;
 	}
 
 	public float mediaTrocaContexto(ArrayList<String> fila){
 		// quantas vezes trocou de processos / numero de processos
-		return 0;
+		return (fila.size()-1)/this.processos.size();
 	}
 
 	public float numProcessosExecutados(){
@@ -240,8 +257,8 @@ public class Escalonador{
 			System.out.println("e. Média Turnaround dos processos: ");
 			System.out.println("f. Média Tempo de Espera dos processos: ");
 			System.out.println("g. Média de Tempo de Resposta dos processos: ");
-			System.out.println("h. Média de troca de contextos: ");
-			System.out.println("i. Número de processos executados: " + this.filaSJF.size());
+			System.out.println("h. Média de troca de contextos: " + this.mediaTrocaContexto(filaSJFP));
+			System.out.println("i. Número de processos executados: " + this.processos.size());
 		} else if(opcao == "2"){
 
 		} else {
@@ -284,7 +301,7 @@ public class Escalonador{
 			System.out.println("f. Média Tempo de Espera dos processos: ");
 			System.out.println("g. Média de Tempo de Resposta dos processos: ");
 			System.out.println("h. Média de troca de contextos: ");
-			System.out.println("i. Número de processos executados: " + this.filaSJF.size());
+			System.out.println("i. Número de processos executados: " + this.processos.size());
 		} else if(opcao == "2"){
 
 		} else {
@@ -660,7 +677,9 @@ public class Escalonador{
 		Escalonador escalonador = new Escalonador();  
 		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
-		
+		escalonador.sjfp("1");
+		escalonador.imprimir(escalonador.filaSJFP);
+
 		
 		///////////////////////////////////// CONSOLE
 		
