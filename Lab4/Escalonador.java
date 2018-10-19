@@ -459,7 +459,7 @@ public class Escalonador{
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
 			System.out.println( "b. Tempo total de processamento = " + (total_time));
 			System.out.println( "c. Percentual de utilização da CPU  = " + ((total_time)/(total_time+context))); // não sei como calcular o tempo de troca de contexto
-			System.out.println( "d. Média troughput dos processos = " + nproc/(total_time+context) );
+			System.out.println( "d. Média troughput dos processos = " + (float) nproc/(total_time) );
 			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
 			System.out.println( "g. Média tempo de Resposta dos processos = " +  (float) IntStream.of(resp).sum()/nproc ); // não sei como calcular o tempo de respostaa
@@ -499,14 +499,14 @@ public class Escalonador{
 			time = time + Integer.parseInt(this.processos.get(i).split(VIRGULA)[2]);
 			wait[i] = start[i] - wait[i];
 			fin[i] = time;
-			turnA[i] = fin[i] - start[i];	
+			turnA[i] = fin[i] - Integer.parseInt(this.processos.get(i).split(VIRGULA)[0]);	
 		}		
 
 		if(opcao == "1"){
 			System.out.println( "a. Algoritmo FCFS.");
 			System.out.println( "b. Tempo total de processamento = " + (time));
 			System.out.println( "c. Percentual de utilização da CPU  = " + ((time)/(time + context))); // não sei como calcular o tempo de troca de contexto
-			System.out.println( "d. Média troughput dos processos = " + nproc/(time+context) );
+			System.out.println( "d. Média troughput dos processos = " + (float) nproc/(time));
 			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
 			System.out.println( "g. Média tempo de Resposta dos processos = " +  (float) IntStream.of(wait).sum()/nproc ); // não sei como calcular o tempo de respostaa
