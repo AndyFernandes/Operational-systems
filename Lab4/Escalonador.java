@@ -553,15 +553,23 @@ public class Escalonador{
 		double mediaThoughput = this.processos.size() / (double)(tempoCPUburst + tempoTrocaContexto);
 		double tempoProcessamento = tempoCPUburst + tempoTrocaContexto;
 		double percentualUsoCpu = (tempoProcessamento - tempoTrocaContexto)/(double)tempoProcessamento;
-		this.estatisticas.add("a. Algoritmo " + nomeAlg);
-		this.estatisticas.add("b. Tempo total de processamento = " + tempoProcessamento);
-		this.estatisticas.add("c. Percentual de utilização da CPU  = " + percentualUsoCpu);
-		this.estatisticas.add("d. Média troughput dos processos = " + mediaThoughput);
-		this.estatisticas.add("e. Média turnaround dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 4)));
-		this.estatisticas.add("f. Média tempo de espera = " + Double.toString(calcularMedia(listaProcessosExecutados, 5)));
-		this.estatisticas.add("g. Média tempo de Resposta dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 6)));
-		this.estatisticas.add("h. Média de troca de contextos = " + (this.diagrama.size() - 1.0)/(double)this.processos.size());
-		this.estatisticas.add("i. Número de processos executados = " + this.processos.size());
+		System.out.println("a. Algoritmo " + nomeAlg);
+		System.out.println("b. Tempo total de processamento = " + tempoProcessamento );
+		System.out.println("c. Percentual de utilização da CPU  = " + percentualUsoCpu);
+		System.out.println("d. Média troughput dos processos = " + mediaThoughput);
+		System.out.println("e. Média turnaround dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 4)));
+		System.out.println("f. Média tempo de espera = " + Double.toString(calcularMedia(listaProcessosExecutados, 5)));
+		System.out.println("g. Média tempo de Resposta dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 6)));
+		System.out.println("h. Média de troca de contextos = " + (this.diagrama.size() - 1.0)/(double)this.processos.size());
+		System.out.println("i. Número de processos executados = " + this.processos.size());
+	}
+
+	public void exibirDiagrma(ArrayList<String> diagrama){
+		String[] processo;
+		for (int i = 0; i < diagrama.size; i++){
+			processo = diagrama.get(i).split(","); 
+			System.out.println("a. ID processo = "+ processado[0])
+		}
 	}
 
 	public String construirString(String[] processo){
@@ -761,8 +769,21 @@ public class Escalonador{
 		Escalonador escalonador = new Escalonador();  
 		Scanner reader = new Scanner(System.in);
 		escalonador.lerArquivo("dados.csv");
+		
+		escalonador.fcfs("1");
+		escalonador.fcfs("2");
+
 		escalonador.sjf("1");
 		escalonador.sjf("2");
+
+		escalonador.sjfp("1");
+		escalonador.sjfp("2");
+
+		escalonador.priority("1");
+		escalonador.priorityP("2");
+
+		escalonador.rr("1");
+		escalonador.rr("2");
 		
 		///////////////////////////////////// CONSOLE
 		
