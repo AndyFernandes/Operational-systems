@@ -457,8 +457,8 @@ public class Escalonador{
 
 		if (opcao == "1") {//estatisticas
 			System.out.println( "a. Algoritmo Round Robin. quantum = " + quantum);
-			System.out.println( "b. Tempo total de processamento = " + (total_time));
-			System.out.println( "c. Percentual de utilização da CPU  = " + ((total_time)/(total_time+context))); // não sei como calcular o tempo de troca de contexto
+			System.out.println( "b. Tempo total de processamento = " + (total_time + context));
+			System.out.println( "c. Percentual de utilização da CPU  = " + (((total_time + context) - context)/((total_time) + context))); // não sei como calcular o tempo de troca de contexto
 			System.out.println( "d. Média troughput dos processos = " + (float) nproc/(total_time) );
 			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
@@ -504,8 +504,8 @@ public class Escalonador{
 
 		if(opcao == "1"){
 			System.out.println( "a. Algoritmo FCFS.");
-			System.out.println( "b. Tempo total de processamento = " + (time));
-			System.out.println( "c. Percentual de utilização da CPU  = " + ((time)/(time + context))); // não sei como calcular o tempo de troca de contexto
+			System.out.println( "b. Tempo total de processamento = " + (time + context));
+			System.out.println( "c. Percentual de utilização da CPU  = " + (((time + context) - context)/(time + context))); // não sei como calcular o tempo de troca de contexto
 			System.out.println( "d. Média troughput dos processos = " + (float) nproc/(time));
 			System.out.println( "e. Média turnaround dos processos = " + (float) IntStream.of(turnA).sum()/nproc );
 			System.out.println( "f. Média tempo de espera = " +  (float) IntStream.of(wait).sum()/nproc );
@@ -554,14 +554,14 @@ public class Escalonador{
 		double tempoProcessamento = tempoCPUburst + tempoTrocaContexto;
 		double percentualUsoCpu = (tempoProcessamento - tempoTrocaContexto)/(double)tempoProcessamento;
 		System.out.println("a. Algoritmo " + nomeAlg);
-		System.out.println("b. Tempo total de processamento = " + tempoProcessamento );
-		System.out.println("c. Percentual de utilização da CPU  = " + percentualUsoCpu);
-		System.out.println("d. Média troughput dos processos = " + mediaThoughput);
-		System.out.println("e. Média turnaround dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 4)));
-		System.out.println("f. Média tempo de espera = " + Double.toString(calcularMedia(listaProcessosExecutados, 5)));
-		System.out.println("g. Média tempo de Resposta dos processos = " + Double.toString(calcularMedia(listaProcessosExecutados, 6)));
-		System.out.println("h. Média de troca de contextos = " + (this.diagrama.size() - 1.0)/(double)this.processos.size());
-		System.out.println("i. Número de processos executados = " + this.processos.size());
+		System.out.println("b. Tempo total de processamento: " + tempoProcessamento );
+		System.out.println("c. Percentual de utilização da CPU: " + percentualUsoCpu);
+		System.out.println("d. Média troughput dos processos: " + mediaThoughput);
+		System.out.println("e. Média turnaround dos processos: " + Double.toString(calcularMedia(listaProcessosExecutados, 4)));
+		System.out.println("f. Média tempo de espera: " + Double.toString(calcularMedia(listaProcessosExecutados, 5)));
+		System.out.println("g. Média tempo de Resposta dos processos: " + Double.toString(calcularMedia(listaProcessosExecutados, 6)));
+		System.out.println("h. Média de troca de contextos: " + (this.diagrama.size() - 1.0)/(double)this.processos.size());
+		System.out.println("i. Número de processos executados: " + this.processos.size());
 	}
 
     public void exibirDiagrama(ArrayList<String> diagrama){
