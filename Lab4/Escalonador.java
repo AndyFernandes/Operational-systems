@@ -1,7 +1,5 @@
 // <Tempo de chegada>, <ID do Processo>, <Burst Time>, <Prioridade>, <Tempo chegada>, <Tempo final>, <CPU faltante>
-// Andreza:
-// > Calcular estatisticas
-// UNIR OS CODIGOS
+
 import java.io.*;
 import java.util.Arrays;
 import java.util.Scanner;
@@ -190,9 +188,10 @@ public class Escalonador{
 		return sum/tempoProcs.size();
 	}
 
-	public float mediaTrocaContexto(ArrayList<String> fila){
+	public double mediaTrocaContexto(ArrayList<String> fila){
 		// quantas vezes trocou de processos / numero de processos
-		return (fila.size()-1)/this.processos.size();
+		
+		return (fila.size()-1)/(float)this.processos.size();
 	}
 
 	public float numProcessosExecutados(){
@@ -390,8 +389,8 @@ public class Escalonador{
 		}
 	}
 
-	public  void rr(String opcao){
-		int quantum = 3, time = 0, nproc;
+	public  void rr(String opcao, int quantum){
+		int time = 0, nproc;
 		float total_time, context = 0;
 		ArrayList<String> ganttRR = new ArrayList(); //<ID> <tempo_ini> <tempo_fim>
 		nproc = this.processos.size();
@@ -469,10 +468,8 @@ public class Escalonador{
 		else if (opcao == "2"){
 			float proct;
 			for (int i = 0; i < ganttRR.size() ; i++){ //não sei se precisa do "this" antes de pegar o size do array
-				System.out.println( "a. ID do processo = " + ganttRR.get(i).split(VIRGULA)[0]);
 				proct = (Integer.parseInt(ganttRR.get(i).split(VIRGULA)[2]) - Integer.parseInt(ganttRR.get(i).split(VIRGULA)[1]));
-				System.out.println( "b. Tempo de processamento = " + proct);
-				System.out.println();
+				System.out.println("ID: "+ganttRR.get(i).split(VIRGULA)[0] + "| Tempo processado: " + proct);
 			}		
 		} else {
 			System.out.println("Opção inválida!");
@@ -516,9 +513,7 @@ public class Escalonador{
 
 		} else if(opcao == "2"){			
 			for (int i = 0; i < nproc ; i++){ //não sei se precisa do "this" antes de pegar o size do array
-				System.out.println( "a. ID do processo = " + this.processos.get(i).split(VIRGULA)[1]);				
-				System.out.println( "b. Tempo de processamento = " + this.processos.get(i).split(VIRGULA)[2]);
-				System.out.println();
+				System.out.println("ID: " + this.processos.get(i).split(VIRGULA)[1] + "| Tempo processado: " + this.processos.get(i).split(VIRGULA)[2]);				
 			}
 		} else{
 			System.out.println("Opção inválida!");
@@ -685,7 +680,7 @@ public class Escalonador{
 		}
 
 		if(opcao == "1") {
-			calcularEstatistica("Prioridade Preemptivo", execucao);
+			calcularEstatistica("Prioridade Não-Preemptivo", execucao);
 		}else if(opcao == "2"){
 			exibirDiagrama(diagrama);
 		}else {
@@ -786,10 +781,13 @@ public class Escalonador{
 		escalonador.sjfp("2");
 
 		escalonador.priority("1");
+		escalonador.priority("2");
+
+		escalonador.priorityP("1");
 		escalonador.priorityP("2");
 
-		escalonador.rr("1");
-		escalonador.rr("2");
+		escalonador.rr("1", 3);
+		escalonador.rr("2", 3);
 		
 		///////////////////////////////////// CONSOLE
 		
