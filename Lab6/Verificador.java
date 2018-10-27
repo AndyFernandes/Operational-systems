@@ -50,7 +50,9 @@ public class Verificador {
 	public void avoid(String pi){}
 	public void detection(){}
 
-	public static void main(String[] args) throws Exception{}
+	public static void main(String[] args) throws Exception{
+		
+	}
 
 
 }
