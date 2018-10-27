@@ -15,9 +15,12 @@ public class Verificador {
 	int[][] allocation;
 	int[][] need;
 	int[] qtsRecurso = {12, 9, 8};
-	ArrayList<String> processos = new ArrayList<>();
+	ArrayList<String> processos;
 	int m = 0, n = 0;
-	Verificador(){}
+
+	Verificador(){
+		this.processos = new ArrayList();
+	}
 
 	public void imprimirVetor(int[] vetor){
 		String linha = " ";
@@ -40,7 +43,7 @@ public class Verificador {
 	public void calcularNeed(){
 		for(int i = 0; i < this.n; i++){
 			for(int j = 0; j < this.m; j++){
-				this.need[i][j] = max[i][j] - allocation[i][j];
+				this.need[i][j] = this.max[i][j] - this.allocation[i][j];
 			}
 		}
 	}
@@ -49,7 +52,7 @@ public class Verificador {
 		for(int j = 0; j < m; j++){
 			int soma = 0;
 			for(int k = 0; k < n; k++){
-				soma += allocation[k][j];
+				soma += this.allocation[k][j];
 			}
 			this.available[j] = qtsRecurso[j] - soma;
 		}
@@ -71,28 +74,87 @@ public class Verificador {
 
 
 		// instanciar os bixos
-		max = new int[n][m];
-		available = new int[m];
-		allocation = new int[n][m];
-		need = new int[n][m];
+		this.max = new int[n][m];
+		this.available = new int[m];
+		this.allocation = new int[n][m];
+		this.need = new int[n][m];
 
 		// quando terminar de ler aqui povoar o available, max, allocation, need
 		for(int i = 0; i < n; i++){
 			aux = this.processos.get(i).split(",");
 			for(int j = 0; j < m; j++){
-				allocation[i][j] = Integer.parseInt(aux[j+1]);
-				max[i][j] = Integer.parseInt(aux[j+4]);
+				this.allocation[i][j] = Integer.parseInt(aux[j+1]);
+				this.max[i][j] = Integer.parseInt(aux[j+4]);
 			}
 		}
 		calcularNeed();
 		calcularAvailable();
 	}
 
-	public void safety(){}
+	public int[] copiar(int[] vetor){
+		int[] copia = new int[vetor.length];
+		for(int i = 0; i < vetor.length; i++){
+			copia[i] = vetor[i];
+		}
+		return copia;
+	}
 
-	public void avoid(String pi){}
+	public void atribuirFalse(boolean[] vetor){
+		for(int i = 0; i < vetor.length; i++){
+			vetor[i] = false;
+		}
+	}
+
+	//duvida se a posicao de acesso ao need e allocation é [i][i] mesmo. Acho que pra cada processo. Verificar isso com a Arina
+	//testar
+	public void safety(){
+		int[] work = copiar(this.available);
+		boolean[] finish = new boolean[this.n];
+		atribuirFalse(finish);
+
+		// fazendo a busca
+		int cont = 0;
+		for(int i = 0; i < this.n; i++){
+			if(finish[i] == false && this.need[i][i] <= work[i]){
+				work[i] = work[i] + this.allocation[i][i];
+				finish[i] = true;
+			} else {
+				cont = 1;
+				break;
+			}
+		}
+		if(cont == 1){
+			System.out.println("Estado inseguro!");
+		} else{
+			System.out.println("Estado seguro!");
+		}
+	}
+
+	//duvida se a posicao de acesso ao need e allocation é [i][i] mesmo. Acho que pra cada processo. Verificar isso com a Arina
+	//testar
+	//duvida se a proxima posição não der certo, se há problemas ficar aquele lixo de informação do caso que deu certo anterior
+	public void avoid(int[] request){
+		int cont = 0;
+		for(int i = 0; i < request.length; i++){
+			// eu realmente acho que tipo a linha seria pelo i do processo e a coluna o j que representa o recurso. Checar c a Arina
+			if(request[i] <= this.need[i][i] && request[i] <= this.available[i]){
+				this.available[i] = this.available[i] - request[i];
+				this.allocation[i][i] = this.allocation[i][i] + request[i];
+				this.need[i][i] = this.need[i][i] - request[i];
+			} else {
+				cont = 1;
+				break;
+			}
+		}
+		if(cont == 1){
+			System.out.println("Estado inseguro! Espera");
+		} else{
+			System.out.println("Recursos alocados!");
+		}
+	}
 	public void detection(){}
 
 	public static void main(String[] args) throws Exception{
 
+	}
 }
