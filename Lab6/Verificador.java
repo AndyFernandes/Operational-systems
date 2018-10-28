@@ -21,30 +21,24 @@ public class Verificador {
 	int m = 0;
 	int n = 0;
 
-	Verificador() {
-	}
+	Verificador() {}
 
 	public void imprimirVetor(int[] var1) {
 		String var2 = " ";
-
 		for(int var3 = 0; var3 < var1.length; ++var3) {
 			var2 = var2 + var1[var3] + " ";
 		}
-
 		System.out.println(var2);
 	}
 
 	public void imprimirMatriz(int[][] var1) {
 		for(int var2 = 0; var2 < var1.length; ++var2) {
 			String var3 = " ";
-
 			for(int var4 = 0; var4 < var1[0].length; ++var4) {
 				var3 = var3 + var1[var2][var4] + " ";
 			}
-
 			System.out.println(var3);
 		}
-
 	}
 
 	public void calcularNeed() {
@@ -53,20 +47,16 @@ public class Verificador {
 				this.need[var1][var2] = this.max[var1][var2] - this.allocation[var1][var2];
 			}
 		}
-
 	}
 
 	public void calcularAvailable() {
 		for(int var1 = 0; var1 < this.m; ++var1) {
 			int var2 = 0;
-
 			for(int var3 = 0; var3 < this.n; ++var3) {
 				var2 += this.allocation[var3][var1];
 			}
-
 			this.available[var1] = this.qtsRecurso[var1] - var2;
 		}
-
 	}
 
 	public void lerArquivo(String var1) throws Exception {
@@ -87,78 +77,93 @@ public class Verificador {
 
 		for(int var5 = 0; var5 < this.n; ++var5) {
 			var4 = ((String)this.processos.get(var5)).split(",");
-
 			for(int var6 = 0; var6 < this.m; ++var6) {
 				this.allocation[var5][var6] = Integer.parseInt(var4[var6 + 1]);
 				this.max[var5][var6] = Integer.parseInt(var4[var6 + 4]);
 			}
 		}
-
 		this.calcularNeed();
 		this.calcularAvailable();
 	}
 
 	public int[] copiar(int[] var1) {
 		int[] var2 = new int[var1.length];
-
 		for(int var3 = 0; var3 < var1.length; ++var3) {
 			var2[var3] = var1[var3];
 		}
-
 		return var2;
 	}
 
-	public void atribuirFalse(boolean[] var1) {
-		for(int var2 = 0; var2 < var1.length; ++var2) {
-			var1[var2] = false;
+	public void atribuirFalse(boolean[] vetor) {
+		for(int i = 0; i < vetor.length; i++) {
+			vetor[i] = false;
 		}
-
 	}
 
-	public void safety() {
-		int[] var1 = this.copiar(this.available);
-		boolean[] var2 = new boolean[this.n];
-		this.atribuirFalse(var2);
-		boolean var3 = false;
+	public boolean safety() {
+		int[] work = this.copiar(this.available);
+		boolean[] finish = new boolean[this.n];
+		this.atribuirFalse(finish);
+		
+		int safeSeq[] = new int[this.n];
 
-		for(int var4 = 0; var4 < this.n; ++var4) {
-			if (var2[var4] || this.need[var4][var4] > var1[var4]) {
-				var3 = true;
-				break;
+		int cont = 0;
+		
+		while(cont < this.n){
+			boolean bool = false;
+			for(int i = 0; i < this.n; i++) {
+				if (finish[i]) { 
+					int j;
+					for(j = 0; j < this.m; j++){
+						if(this.need[i][j] > work[j]){
+							break;
+						}
+					}
+
+					if(j == this.m){
+						for(int k = 0; k < this.m; k++){
+							work[k] += allocation[i][k]; 
+						}
+						finish[i] = true;
+						safeSeq[cont++] = i;
+						bool = true;
+					} else {
+						bool = false;
+						break;
+					}
+				} else {
+					bool = false;
+					break;
+				}
 			}
-
-			var1[var4] += this.allocation[var4][var4];
-			var2[var4] = true;
+			if(bool == false){
+				System.out.println("Estado inseguro!");
+				return false;
+			}
 		}
-
-		if (var3) {
-			System.out.println("Estado inseguro!");
-		} else {
-			System.out.println("Estado seguro!");
-		}
-
+		System.out.println("Processos sem deadlock!\nSequencia de processos:");
+		imprimirVetor(safeSeq);
+		return true;
 	}
 
 	public void avoid(int[] var1) {
-		boolean var2 = false;
+		boolean bool = false;
 
-		for(int var3 = 0; var3 < var1.length; ++var3) {
-			if (var1[var3] > this.need[var3][var3] || var1[var3] > this.available[var3]) {
-				var2 = true;
+		for(int i = 0; i < var1.length; i++) {
+			if (var1[i] > this.need[i][i] || var1[i] > this.available[i]) {
+				bool = true;
 				break;
 			}
-
-			this.available[var3] -= var1[var3];
-			this.allocation[var3][var3] += var1[var3];
-			this.need[var3][var3] -= var1[var3];
+			this.available[i] -= var1[i];
+			this.allocation[i][i] += var1[i];
+			this.need[i][i] -= var1[i];
 		}
 
-		if (var2) {
+		if (bool) {
 			System.out.println("Estado inseguro! Espera");
 		} else {
 			System.out.println("Recursos alocados!");
 		}
-
 	}
 
 	public boolean detection(String var1) throws Exception{
@@ -227,6 +232,14 @@ public class Verificador {
 		}
 		System.out.println(execucao);
 		return true;
+
+	}
+
+	public static void main(String[] args) throws Exception {
+		Verificador verificador = new Verificador();
+		verificador.lerArquivo("dados.csv");
+
+		verificador.safety();
 
 	}
 
