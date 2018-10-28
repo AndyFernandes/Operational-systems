@@ -169,20 +169,20 @@ public class Verificador {
 	public boolean detection(String var1) throws Exception{
 		this.request = new int[this.n][this.m];
 
-		BufferedReader var2 = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
-		String var3 = null;
+		BufferedReader listaRequesicoes = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
+		String requesicao = null;
 
 		processos.clear();
-		while((var3 = var2.readLine()) != null) {
-			this.processos.add(var3);
+		while((requesicao = listaRequesicoes.readLine()) != null) {
+			this.processos.add(requesicao);
 		}
 
-		String[] var4;
+		String[] dadosRequisicao;
 
-		for(int var5 = 0; var5 < this.n; ++var5) {
-			var4 = ((String)this.processos.get(var5)).split(",");
-			for(int var6 = 0; var6 < this.m; ++var6) {
-				this.request[var5][var6] = Integer.parseInt(var4[var6 + 1]);
+		for(int i = 0; i < this.n; ++i) {
+			dadosRequisicao = ((String)this.processos.get(i)).split(",");
+			for(int j = 0; j < this.m; ++j) {
+				this.request[i][j] = Integer.parseInt(dadosRequisicao[j + 1]);
 			}
 		}
 
@@ -191,11 +191,11 @@ public class Verificador {
 
 		atribuirFalse(finish);
 
-		int[] safeSeq =  new int[this.n];
-		int count = 0;
+		int[] sequenciaSegura =  new int[this.n];
+		int numProcessos = 0;
 
-		while (count < this.n){
-			boolean flag = false;
+		while (numProcessos < this.n){
+			boolean found = false;
 			for(int p = 0; p < this.n; p++){
 				if(finish[p] == false){
 					int j;
@@ -209,15 +209,15 @@ public class Verificador {
 						for(int k = 0; k < this.m; k++){
 							work[k] += this.allocation[p][k];
 						}
-						safeSeq[count] = p;
-						count++;
+						sequenciaSegura[numProcessos] = p;
+						numProcessos++;
 						finish[p] = true;
-						flag = true;
+						found = true;
 						p = 0;
 					}
 				}
 			}
-			if(flag == false){
+			if(found == false){
 				System.out.println("Sistema está em deadlock");
 				return false;
 			}
@@ -226,11 +226,11 @@ public class Verificador {
 
 
 		System.out.println("Sistema não está em deadlock \nSequencia segura de execução:");
-		String execucao = " ";
+		String sequenciaExecucao = " ";
 		for(int i = 0; i < this.n; i++){
-			execucao += "P" + safeSeq[i] + " ";
+			sequenciaExecucao += "P" + sequenciaSegura[i] + " ";
 		}
-		System.out.println(execucao);
+		System.out.println(sequenciaExecucao);
 		return true;
 
 	}
