@@ -15,7 +15,7 @@ public class Verificador {
 	int[][] max;
 	int[][] allocation;
 	int[][] need;
-	int[] qtsRecurso = new int[]{7, 2, 6};
+	int[] qtsRecurso = new int[]{20, 10, 10};
 	int[][] request;
 	ArrayList<String> processos = new ArrayList();
 	int m = 0;
@@ -104,36 +104,32 @@ public class Verificador {
 		int[] work = this.copiar(this.available);
 		boolean[] finish = new boolean[this.n];
 		this.atribuirFalse(finish);
-		
 		int safeSeq[] = new int[this.n];
-
 		int cont = 0;
 		
 		while(cont < this.n){
 			boolean bool = false;
 			for(int i = 0; i < this.n; i++) {
-				if (finish[i]) { 
+				if (finish[i] == false) { 
 					int j;
 					for(j = 0; j < this.m; j++){
 						if(this.need[i][j] > work[j]){
 							break;
 						}
 					}
-
 					if(j == this.m){
 						for(int k = 0; k < this.m; k++){
 							work[k] += allocation[i][k]; 
 						}
 						finish[i] = true;
-						safeSeq[cont++] = i;
+						safeSeq[cont] = i;
+						cont +=1;
 						bool = true;
 					} else {
 						bool = false;
 						break;
 					}
-				} else {
-					bool = false;
-					break;
+				
 				}
 			}
 			if(bool == false){
