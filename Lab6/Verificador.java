@@ -1,160 +1,233 @@
-import org.omg.CORBA.IMP_LIMIT;
+//
+// Source code recreated from a .class file by IntelliJ IDEA
+// (powered by Fernflower decompiler)
+//
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.sql.SQLSyntaxErrorException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.io.*;
-import java.util.Arrays;
-import java.util.Scanner;
-import java.util.stream.IntStream;
 
 public class Verificador {
 	private static final String VIRGULA = ",";
-	int available[];
+	int[] available;
 	int[][] max;
 	int[][] allocation;
 	int[][] need;
-	int[] qtsRecurso = {12, 9, 8};
-	ArrayList<String> processos;
-	int m = 0, n = 0;
+	int[] qtsRecurso = new int[]{7, 2, 6};
+	int[][] request;
+	ArrayList<String> processos = new ArrayList();
+	int m = 0;
+	int n = 0;
 
-	Verificador(){
-		this.processos = new ArrayList();
+	Verificador() {
 	}
 
-	public void imprimirVetor(int[] vetor){
-		String linha = " ";
-		for (int i = 0; i < vetor.length; i ++){
-			linha += vetor[i] + " ";
+	public void imprimirVetor(int[] var1) {
+		String var2 = " ";
+
+		for(int var3 = 0; var3 < var1.length; ++var3) {
+			var2 = var2 + var1[var3] + " ";
 		}
-		System.out.println(linha);
+
+		System.out.println(var2);
 	}
 
-	public void imprimirMatriz(int[][] matriz){
-		for(int i = 0; i < matriz.length; i++){
-			String linha = " ";
-			for(int j = 0; j < matriz[0].length; j++){
-				linha += matriz[i][j] + " ";
+	public void imprimirMatriz(int[][] var1) {
+		for(int var2 = 0; var2 < var1.length; ++var2) {
+			String var3 = " ";
+
+			for(int var4 = 0; var4 < var1[0].length; ++var4) {
+				var3 = var3 + var1[var2][var4] + " ";
 			}
-			System.out.println(linha);
+
+			System.out.println(var3);
 		}
+
 	}
 
-	public void calcularNeed(){
-		for(int i = 0; i < this.n; i++){
-			for(int j = 0; j < this.m; j++){
-				this.need[i][j] = this.max[i][j] - this.allocation[i][j];
+	public void calcularNeed() {
+		for(int var1 = 0; var1 < this.n; ++var1) {
+			for(int var2 = 0; var2 < this.m; ++var2) {
+				this.need[var1][var2] = this.max[var1][var2] - this.allocation[var1][var2];
 			}
 		}
+
 	}
 
-	public void calcularAvailable(){
-		for(int j = 0; j < m; j++){
-			int soma = 0;
-			for(int k = 0; k < n; k++){
-				soma += this.allocation[k][j];
+	public void calcularAvailable() {
+		for(int var1 = 0; var1 < this.m; ++var1) {
+			int var2 = 0;
+
+			for(int var3 = 0; var3 < this.n; ++var3) {
+				var2 += this.allocation[var3][var1];
 			}
-			this.available[j] = qtsRecurso[j] - soma;
+
+			this.available[var1] = this.qtsRecurso[var1] - var2;
 		}
+
 	}
 
-	public void lerArquivo(String arquivo) throws Exception{
-		BufferedReader readeer = new BufferedReader(new InputStreamReader(new FileInputStream(arquivo)));
-		String linha = null;
+	public void lerArquivo(String var1) throws Exception {
+		BufferedReader var2 = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
+		String var3 = null;
 
-		while ((linha = readeer.readLine()) != null) {
-			this.processos.add(linha);
+		while((var3 = var2.readLine()) != null) {
+			this.processos.add(var3);
 		}
 
-		// calcular n e m  e atribuir a variaveis
-		// aparentemente n = processos.size() e m = processos[0].split() -> Ai (tamanho do vetor splitado - 1 )/2
 		this.n = this.processos.size();
-		String[] aux = this.processos.get(0).split(",");
-		this.m = (aux.length - 1)/2;
+		String[] var4 = ((String)this.processos.get(0)).split(",");
+		this.m = (var4.length - 1) / 2;
+		this.max = new int[this.n][this.m];
+		this.available = new int[this.m];
+		this.allocation = new int[this.n][this.m];
+		this.need = new int[this.n][this.m];
 
+		for(int var5 = 0; var5 < this.n; ++var5) {
+			var4 = ((String)this.processos.get(var5)).split(",");
 
-		// instanciar os bixos
-		this.max = new int[n][m];
-		this.available = new int[m];
-		this.allocation = new int[n][m];
-		this.need = new int[n][m];
-
-		// quando terminar de ler aqui povoar o available, max, allocation, need
-		for(int i = 0; i < n; i++){
-			aux = this.processos.get(i).split(",");
-			for(int j = 0; j < m; j++){
-				this.allocation[i][j] = Integer.parseInt(aux[j+1]);
-				this.max[i][j] = Integer.parseInt(aux[j+4]);
+			for(int var6 = 0; var6 < this.m; ++var6) {
+				this.allocation[var5][var6] = Integer.parseInt(var4[var6 + 1]);
+				this.max[var5][var6] = Integer.parseInt(var4[var6 + 4]);
 			}
 		}
-		calcularNeed();
-		calcularAvailable();
+
+		this.calcularNeed();
+		this.calcularAvailable();
 	}
 
-	public int[] copiar(int[] vetor){
-		int[] copia = new int[vetor.length];
-		for(int i = 0; i < vetor.length; i++){
-			copia[i] = vetor[i];
+	public int[] copiar(int[] var1) {
+		int[] var2 = new int[var1.length];
+
+		for(int var3 = 0; var3 < var1.length; ++var3) {
+			var2[var3] = var1[var3];
 		}
-		return copia;
+
+		return var2;
 	}
 
-	public void atribuirFalse(boolean[] vetor){
-		for(int i = 0; i < vetor.length; i++){
-			vetor[i] = false;
+	public void atribuirFalse(boolean[] var1) {
+		for(int var2 = 0; var2 < var1.length; ++var2) {
+			var1[var2] = false;
 		}
+
 	}
 
-	//duvida se a posicao de acesso ao need e allocation é [i][i] mesmo. Acho que pra cada processo. Verificar isso com a Arina
-	//testar
-	public void safety(){
-		int[] work = copiar(this.available);
-		boolean[] finish = new boolean[this.n];
-		atribuirFalse(finish);
+	public void safety() {
+		int[] var1 = this.copiar(this.available);
+		boolean[] var2 = new boolean[this.n];
+		this.atribuirFalse(var2);
+		boolean var3 = false;
 
-		// fazendo a busca
-		int cont = 0;
-		for(int i = 0; i < this.n; i++){
-			if(finish[i] == false && this.need[i][i] <= work[i]){
-				work[i] = work[i] + this.allocation[i][i];
-				finish[i] = true;
-			} else {
-				cont = 1;
+		for(int var4 = 0; var4 < this.n; ++var4) {
+			if (var2[var4] || this.need[var4][var4] > var1[var4]) {
+				var3 = true;
 				break;
 			}
+
+			var1[var4] += this.allocation[var4][var4];
+			var2[var4] = true;
 		}
-		if(cont == 1){
+
+		if (var3) {
 			System.out.println("Estado inseguro!");
-		} else{
+		} else {
 			System.out.println("Estado seguro!");
 		}
+
 	}
 
-	//duvida se a posicao de acesso ao need e allocation é [i][i] mesmo. Acho que pra cada processo. Verificar isso com a Arina
-	//testar
-	//duvida se a proxima posição não der certo, se há problemas ficar aquele lixo de informação do caso que deu certo anterior
-	public void avoid(int[] request){
-		int cont = 0;
-		for(int i = 0; i < request.length; i++){
-			// eu realmente acho que tipo a linha seria pelo i do processo e a coluna o j que representa o recurso. Checar c a Arina
-			if(request[i] <= this.need[i][i] && request[i] <= this.available[i]){
-				this.available[i] = this.available[i] - request[i];
-				this.allocation[i][i] = this.allocation[i][i] + request[i];
-				this.need[i][i] = this.need[i][i] - request[i];
-			} else {
-				cont = 1;
+	public void avoid(int[] var1) {
+		boolean var2 = false;
+
+		for(int var3 = 0; var3 < var1.length; ++var3) {
+			if (var1[var3] > this.need[var3][var3] || var1[var3] > this.available[var3]) {
+				var2 = true;
 				break;
 			}
+
+			this.available[var3] -= var1[var3];
+			this.allocation[var3][var3] += var1[var3];
+			this.need[var3][var3] -= var1[var3];
 		}
-		if(cont == 1){
+
+		if (var2) {
 			System.out.println("Estado inseguro! Espera");
-		} else{
+		} else {
 			System.out.println("Recursos alocados!");
 		}
-	}
-	public void detection(){}
-
-	public static void main(String[] args) throws Exception{
 
 	}
+
+	public boolean detection(String var1) throws Exception{
+		this.request = new int[this.n][this.m];
+
+		BufferedReader var2 = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
+		String var3 = null;
+
+		processos.clear();
+		while((var3 = var2.readLine()) != null) {
+			this.processos.add(var3);
+		}
+
+		String[] var4;
+
+		for(int var5 = 0; var5 < this.n; ++var5) {
+			var4 = ((String)this.processos.get(var5)).split(",");
+			for(int var6 = 0; var6 < this.m; ++var6) {
+				this.request[var5][var6] = Integer.parseInt(var4[var6 + 1]);
+			}
+		}
+
+		int[] work = this.copiar(this.available);
+		boolean[] finish = new boolean[this.n];
+
+		atribuirFalse(finish);
+
+		int[] safeSeq =  new int[this.n];
+		int count = 0;
+
+		while (count < this.n){
+			boolean flag = false;
+			for(int p = 0; p < this.n; p++){
+				if(finish[p] == false){
+					int j;
+					for(j = 0; j < this.m; j++){
+						if(this.request[p][j] > work[j]){
+							break;
+						}
+					}
+
+					if(j == this.m){
+						for(int k = 0; k < this.m; k++){
+							work[k] += this.allocation[p][k];
+						}
+						safeSeq[count] = p;
+						count++;
+						finish[p] = true;
+						flag = true;
+						p = 0;
+					}
+				}
+			}
+			if(flag == false){
+				System.out.println("Sistema está em deadlock");
+				return false;
+			}
+
+		}
+
+
+		System.out.println("Sistema não está em deadlock \nSequencia segura de execução:");
+		String execucao = " ";
+		for(int i = 0; i < this.n; i++){
+			execucao += "P" + safeSeq[i] + " ";
+		}
+		System.out.println(execucao);
+		return true;
+
+	}
+
 }
