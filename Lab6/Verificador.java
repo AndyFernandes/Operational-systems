@@ -300,6 +300,7 @@ public class Verificador {
 		System.out.println("-----------------------------------");
 		System.out.println("3. Execução DETECTION: ");
 		// dectetion
+		verificador.detection("requests.csv");
 	}
 
 }
