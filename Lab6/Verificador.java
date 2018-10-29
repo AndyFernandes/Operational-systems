@@ -142,24 +142,39 @@ public class Verificador {
 		return true;
 	}
 
-	public void avoid(int[] var1) {
-		boolean bool = false;
+	public boolean avoid(int[] request) {
+		// assume-se que o processo passado está na lista de processos
+		int i;
+		int Pi = request[0];
 
-		for(int i = 0; i < var1.length; i++) {
-			if (var1[i] > this.need[i][i] || var1[i] > this.available[i]) {
-				bool = true;
-				break;
+		for(i = 0; i < this.m; i++) {
+			if (request[i+1] > this.need[Pi][i]) {
+				System.out.println("Erro, processo excedeu limite máximo de requisições");
+				return false;
 			}
-			this.available[i] -= var1[i];
-			this.allocation[i][i] += var1[i];
-			this.need[i][i] -= var1[i];
 		}
-
-		if (bool) {
-			System.out.println("Estado inseguro! Espera");
-		} else {
+		
+		if(i == this.m){
+			for(i = 0; i < this.m; i++){
+				if(request[i+1] > this.available[i]){
+					System.out.println("Processo espera por recursos");
+					return false;
+				}
+			}
+			
+			if(i == this.m){
+				for(i = 0; i < this.m; i++){
+					this.available[i] -= request[i+1];
+					this.allocation[Pi][i] += request[i+1];
+					this.need[Pi][i] -= request[i+1];
+				}
 			System.out.println("Recursos alocados!");
+			return true;
+			}
 		}
+		System.out.println("Erro");
+		return false;
+
 	}
 
 	public boolean detection(String var1) throws Exception{
@@ -235,8 +250,21 @@ public class Verificador {
 		Verificador verificador = new Verificador();
 		verificador.lerArquivo("dados.csv");
 
+		// safety para o conjunto de dados oferecidos
 		verificador.safety();
 
+		// Simulando o Pi que é o request
+		int [] pi = new int[4];
+		pi[0] = 1;
+		
+		pi[1] = 1;
+		pi[2] = 0;
+		pi[3] = 0;
+
+		// avoid
+		verificador.avoid(pi);
+		
+		// dectetion
 	}
 
 }
