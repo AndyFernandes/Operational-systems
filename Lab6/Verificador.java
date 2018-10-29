@@ -14,14 +14,17 @@ public class Verificador {
 	int[][] allocation;
 	int[][] need;
 	// refere-se ao vetor base que diz quanto há pra cada recurso
-	int[] qtsRecurso = new int[]{20, 10, 10};
+	int[] qtsRecurso;
 	int[][] request;
-	ArrayList<String> processos = new ArrayList();
+	ArrayList<String> processos;
 	int m = 0;
 	int n = 0;
 
 	Verificador() {}
 
+	public void setarQntRecursos(){
+		this.qtsRecurso = new int[]{20, 10, 10};
+	}
 
 	public void imprimirVetor(int[] vetor) {
 		String dados = " ";
@@ -59,8 +62,8 @@ public class Verificador {
 		}
 	}
 
-
 	public void lerArquivo(String var1) throws Exception {
+		this.processos = new ArrayList();
 		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
 		String dados = null;
 
@@ -68,9 +71,12 @@ public class Verificador {
 			this.processos.add(dados);
 		}
 
+		setarQntRecursos();
+		
 		this.n = this.processos.size();
 		String[] dadosProcesso = ((String)this.processos.get(0)).split(",");
 		this.m = (dadosProcesso.length - 1) / 2;
+		
 		this.max = new int[this.n][this.m];
 		this.available = new int[this.m];
 		this.allocation = new int[this.n][this.m];
@@ -83,6 +89,7 @@ public class Verificador {
 				this.max[i][j] = Integer.parseInt(dadosProcesso[j + 4]);
 			}
 		}
+		
 		this.calcularNeed();
 		this.calcularAvailable();
 	}
@@ -145,7 +152,6 @@ public class Verificador {
 	}
 
 	public boolean avoid(int[] request) {
-		// assume-se que o processo passado está na lista de processos
 		int i;
 		int Pi = request[0];
 
@@ -250,11 +256,35 @@ public class Verificador {
 
 	public static void main(String[] args) throws Exception {
 		Verificador verificador = new Verificador();
-		verificador.lerArquivo("dados_slide.csv");
+		String arquivo = "dados.csv";
+		verificador.lerArquivo(arquivo);
 
+		System.out.println("Dados de entrada: \nArquivo: " + arquivo + "\nQuantidade de processos: " + verificador.processos.size());
+
+		System.out.println("-----------------------------------");
+		System.out.println("Matriz ALLOCATION: ");
+		verificador.imprimirMatriz(verificador.allocation);
+
+		System.out.println("-----------------------------------");
+		System.out.println("Matriz MAX: ");
+		verificador.imprimirMatriz(verificador.max);
+
+		System.out.println("-----------------------------------");
+		System.out.println("Vetor AVAILABLE: ");
+		verificador.imprimirVetor(verificador.available);
+
+		System.out.println("-----------------------------------");
+		System.out.println("Matriz NEED: ");
+		verificador.imprimirMatriz(verificador.need);
+
+		System.out.println("-----------------------------------");
+		System.out.println("1. Execução SAFETY: ");
 		// safety para o conjunto de dados oferecidos
 		verificador.safety();
 
+		System.out.println("-----------------------------------");
+		System.out.println("2. Execução AVOID: ");
+		System.out.println("Vetor REQUESTi: ");
 		// Simulando o Pi que é o request
 		int [] pi = new int[4];
 		pi[0] = 1;
@@ -264,8 +294,11 @@ public class Verificador {
 		pi[3] = 0;
 
 		// avoid
+		verificador.imprimirVetor(pi);
 		verificador.avoid(pi);
-		
+
+		System.out.println("-----------------------------------");
+		System.out.println("3. Execução DETECTION: ");
 		// dectetion
 	}
 
