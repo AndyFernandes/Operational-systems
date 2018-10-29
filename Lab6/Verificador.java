@@ -13,6 +13,7 @@ public class Verificador {
 	int[][] max;
 	int[][] allocation;
 	int[][] need;
+	// refere-se ao vetor base que diz quanto há pra cada recurso
 	int[] qtsRecurso = new int[]{20, 10, 10};
 	int[][] request;
 	ArrayList<String> processos = new ArrayList();
@@ -249,7 +250,7 @@ public class Verificador {
 
 	public static void main(String[] args) throws Exception {
 		Verificador verificador = new Verificador();
-		verificador.lerArquivo("dados.csv");
+		verificador.lerArquivo("dados_slide.csv");
 
 		// safety para o conjunto de dados oferecidos
 		verificador.safety();
