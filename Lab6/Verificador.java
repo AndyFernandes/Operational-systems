@@ -1,7 +1,5 @@
-//
-// Source code recreated from a .class file by IntelliJ IDEA
-// (powered by Fernflower decompiler)
-//
+// Andreza Fernandes de Oliveira - 384341
+// Arina de Jesus - 39
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -23,76 +21,79 @@ public class Verificador {
 
 	Verificador() {}
 
-	public void imprimirVetor(int[] var1) {
-		String var2 = " ";
-		for(int var3 = 0; var3 < var1.length; ++var3) {
-			var2 = var2 + var1[var3] + " ";
+
+	public void imprimirVetor(int[] vetor) {
+		String dados = " ";
+		for(int i = 0; i < vetor.length; ++i) {
+			dados = dados + vetor[i] + " ";
 		}
-		System.out.println(var2);
+		System.out.println(dados);
 	}
 
-	public void imprimirMatriz(int[][] var1) {
-		for(int var2 = 0; var2 < var1.length; ++var2) {
-			String var3 = " ";
-			for(int var4 = 0; var4 < var1[0].length; ++var4) {
-				var3 = var3 + var1[var2][var4] + " ";
+	public void imprimirMatriz(int[][] matriz) {
+		for(int i = 0; i < matriz.length; ++i) {
+			String dados = " ";
+			for(int j = 0; j < matriz[0].length; ++j) {
+				dados = dados + matriz[i][j] + " ";
 			}
-			System.out.println(var3);
+			System.out.println(dados);
 		}
 	}
 
 	public void calcularNeed() {
-		for(int var1 = 0; var1 < this.n; ++var1) {
-			for(int var2 = 0; var2 < this.m; ++var2) {
-				this.need[var1][var2] = this.max[var1][var2] - this.allocation[var1][var2];
+		for(int i = 0; i < this.n; ++i) {
+			for(int j = 0; j < this.m; ++j) {
+				this.need[i][j] = this.max[i][j] - this.allocation[i][j];
 			}
 		}
 	}
 
 	public void calcularAvailable() {
-		for(int var1 = 0; var1 < this.m; ++var1) {
-			int var2 = 0;
-			for(int var3 = 0; var3 < this.n; ++var3) {
-				var2 += this.allocation[var3][var1];
+		for(int i = 0; i < this.m; ++i) {
+			int dados = 0;
+			for(int j = 0; j < this.n; ++j) {
+				dados += this.allocation[j][i];
 			}
-			this.available[var1] = this.qtsRecurso[var1] - var2;
+			this.available[i] = this.qtsRecurso[i] - dados;
 		}
 	}
 
-	public void lerArquivo(String var1) throws Exception {
-		BufferedReader var2 = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
-		String var3 = null;
 
-		while((var3 = var2.readLine()) != null) {
-			this.processos.add(var3);
+	public void lerArquivo(String var1) throws Exception {
+		BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(new FileInputStream(var1)));
+		String dados = null;
+
+		while((dados = bufferedReader.readLine()) != null) {
+			this.processos.add(dados);
 		}
 
 		this.n = this.processos.size();
-		String[] var4 = ((String)this.processos.get(0)).split(",");
-		this.m = (var4.length - 1) / 2;
+		String[] dadosProcesso = ((String)this.processos.get(0)).split(",");
+		this.m = (dadosProcesso.length - 1) / 2;
 		this.max = new int[this.n][this.m];
 		this.available = new int[this.m];
 		this.allocation = new int[this.n][this.m];
 		this.need = new int[this.n][this.m];
 
-		for(int var5 = 0; var5 < this.n; ++var5) {
-			var4 = ((String)this.processos.get(var5)).split(",");
-			for(int var6 = 0; var6 < this.m; ++var6) {
-				this.allocation[var5][var6] = Integer.parseInt(var4[var6 + 1]);
-				this.max[var5][var6] = Integer.parseInt(var4[var6 + 4]);
+		for(int i = 0; i < this.n; ++i) {
+			dadosProcesso = ((String)this.processos.get(i)).split(",");
+			for(int j = 0; j < this.m; ++j) {
+				this.allocation[i][j] = Integer.parseInt(dadosProcesso[j + 1]);
+				this.max[i][j] = Integer.parseInt(dadosProcesso[j + 4]);
 			}
 		}
 		this.calcularNeed();
 		this.calcularAvailable();
 	}
 
-	public int[] copiar(int[] var1) {
-		int[] var2 = new int[var1.length];
-		for(int var3 = 0; var3 < var1.length; ++var3) {
-			var2[var3] = var1[var3];
+	public int[] copiar(int[] vetor) {
+		int[] dados = new int[vetor.length];
+		for(int i = 0; i < vetor.length; ++i) {
+			dados[i] = vetor[i];
 		}
-		return var2;
+		return dados;
 	}
+
 
 	public void atribuirFalse(boolean[] vetor) {
 		for(int i = 0; i < vetor.length; i++) {
@@ -106,11 +107,11 @@ public class Verificador {
 		this.atribuirFalse(finish);
 		int safeSeq[] = new int[this.n];
 		int cont = 0;
-		
+
 		while(cont < this.n){
 			boolean bool = false;
 			for(int i = 0; i < this.n; i++) {
-				if (finish[i] == false) { 
+				if (finish[i] == false) {
 					int j;
 					for(j = 0; j < this.m; j++){
 						if(this.need[i][j] > work[j]){
@@ -119,7 +120,7 @@ public class Verificador {
 					}
 					if(j == this.m){
 						for(int k = 0; k < this.m; k++){
-							work[k] += allocation[i][k]; 
+							work[k] += allocation[i][k];
 						}
 						finish[i] = true;
 						safeSeq[cont] = i;
@@ -129,7 +130,7 @@ public class Verificador {
 						bool = false;
 						break;
 					}
-				
+
 				}
 			}
 			if(bool == false){
