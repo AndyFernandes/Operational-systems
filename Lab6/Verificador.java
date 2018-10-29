@@ -267,6 +267,7 @@ public class Verificador {
 		verificador.avoid(pi);
 		
 		// dectetion
+		detection("requests.csv")
 	}
 
 }
